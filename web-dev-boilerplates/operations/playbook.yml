@@ -1,0 +1,62 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Include variables
+      include_vars:
+        file: vars.yml
+        name: xvar
+      tags:
+        - online
+        - offline
+        - dev-offline
+        - dev-online
+
+    - name: Run sample
+      tags: online
+      docker_compose:
+        project_name: sample
+        project_src: "{{ xvar.context_src }}"
+        build: yes
+        nocache: yes
+        state: present
+        remove_orphans: yes
+      register: online
+
+    - name: Check running containers
+      tags: online
+      assert:
+        that:
+          - online.services.nginx.sample_nginx_1.state.running == true
+          - online.services.frontend.sample_frontend_1.state.running == true
+          - online.services.backend.sample_backend_1.state.running == true
+          - online.services.centrifugo.sample_centrifugo_1.state.running == true
+          - online.services.prometheus.sample_prometheus_1.state.running == true
+          - online.services.redis.sample_redis_1.state.running == true
+
+    - name: Stop sample
+      tags: offline
+      docker_compose:
+        project_name: sample
+        project_src: "{{ xvar.context_src }}"
+        build: no
+        state: absent
+        remove_volumes: yes
+
+    - name: Stop sample dev service
+      tags: dev-offline
+      docker_compose:
+        project_name: sample-dev
+        project_src: "{{ xvar.context_src_dev }}"
+        build: no
+        state: absent
+        remove_volumes: yes
+
+    - name: Run sample dev service
+      tags: dev-online
+      docker_compose:
+        project_name: sample-dev
+        project_src: "{{ xvar.context_src_dev }}"
+        build: yes
+        nocache: yes
+        state: present
+        remove_orphans: yes

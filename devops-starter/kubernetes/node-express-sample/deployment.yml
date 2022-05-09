@@ -1,0 +1,43 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: node-express-service
+spec:
+  selector:
+    # defined on deployment below
+    app: node-express # Target the pod named node-express
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      # 8080 -> 80
+      port: 8080
+      # Port to forward to inside the pod
+      # This is the default port for web servers
+      targetPort: 8080
+      # Port accessible outside cluster
+      # 30001 -> 80
+      nodePort: 30006
+  type: LoadBalancer
+
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: node-express-deployment # Name of the deployment you want
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: node-express # Name of the app you want
+    spec:
+      containers:
+          # Pulls image from the registry
+          # To avoid pulling from the registry
+          # See enabling minikube docker daemon
+        - name: node-express # Name of the image you want
+          image: express-app:v2 # The actual image name from the registry
+          ports:
+            - containerPort: 8080

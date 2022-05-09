@@ -1,0 +1,14 @@
+# List all your nodes here
+
+[test-servers]
+0.0.0.0
+
+
+[all:vars]
+# set up config for all
+# interpreter on node
+ansible_python_interpreter=/usr/bin/python
+
+[test-servers:vars]
+# specific setup
+

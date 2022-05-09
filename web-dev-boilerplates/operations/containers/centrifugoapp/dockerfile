@@ -1,0 +1,15 @@
+FROM alpine:latest
+
+RUN addgroup -S centrifugo && adduser -S -G centrifugo centrifugo \
+    && mkdir /centrifugo && chown centrifugo:centrifugo /centrifugo \
+    && mkdir /var/log/centrifugo && chown centrifugo:centrifugo /var/log/centrifugo
+
+ADD centrifugo /usr/bin/centrifugo
+
+ADD config/config.yml /centrifugo/config.yml
+
+WORKDIR /centrifugo
+
+USER centrifugo
+
+ENTRYPOINT ["/usr/bin/centrifugo" ,"-c", "config.yml" , "--redis_host=redis", "--redis_port=6379"]

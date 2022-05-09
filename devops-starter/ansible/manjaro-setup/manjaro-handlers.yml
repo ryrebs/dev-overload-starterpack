@@ -1,0 +1,97 @@
+---
+- name: Change shell to zsh
+  command: chsh -s /usr/bin/zsh
+  become: yes
+  when: zsh is success
+
+- name: Add nvm to path
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+
+- name: Load nvm
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+
+- name: Load bash completion
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'
+
+- name: Set zsh theme
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    regexp: "^ZSH_THEME=.*"
+    line: 'ZSH_THEME="ys"'
+
+- name: Setup git configurations
+  command: "git config --global {{ item }}"
+  with_items:
+    - user.name "{{ xvar.user }}"
+    - user.email "{{ xvar.email }}"
+    - color.ui auto
+    - color.branch auto
+    - color.diff auto
+    - color.status auto
+  when:
+    - xvar.user != None
+    - xvar.email != None
+
+- name: Create git log alias
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: 'alias glog="git log --graph --all --pretty=format:''%C(blue)%h %C(red)%d %Creset - %C(yellow)%s%Creset %C(green)(%cr)%Creset <%aN>''"'
+
+- name: Generate rsa keys
+  command: /usr/bin/ssh-keygen -t rsa -N '' -b 4096 -C '{{ xvar.email }}' -f "{{ ansible_env.HOME }}/.ssh/id_rsa"
+  args:
+    creates: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+  when:
+    - xvar.email != None
+
+- name: Extract golang
+  unarchive:
+    src: "{{ ansible_env.HOME }}/Downloads/golang.tar.gz"
+    dest: "{{ ansible_env.HOME }}/Downloads"
+
+- name: Add go root bin to path
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: "PATH=$PATH:{{ xvar.golang_root_path }}/bin"
+
+- name: Export golang GOPATH
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: "export GOPATH={{ xvar.golang_app_path }}"
+
+- name: Export golang GOBIN
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: "export GOBIN={{ xvar.golang_app_path }}/bin"
+
+- name: Add GOBIN to PATH
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: present
+    line: "PATH=$PATH:$GOBIN"
+
+- name: Remove golang tgz
+  file:
+    path: "{{ ansible_env.HOME }}/Downloads/golang.tar.gz"
+    state: absent
+
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_env.USER }}"
+    groups: docker
+    append: yes
+  become: yes

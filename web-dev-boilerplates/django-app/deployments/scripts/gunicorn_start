@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# -->> Change this part < >
+NAME='rpi web'
+DJANGODIR=/yourpathproject
+SETTINGS=production
+ENV_PATH=/yourpath/env/bin/activate
+# -->>
+
+SOCKFILE=$DJANGODIR/run/gunicorn.socket
+DJANGO_SETTINGS_MODULE=config.settings.$SETTINGS
+DJANGO_WSGI_MODULE=config.wsgi
+
+echo "Starting $NAME as `whoami`"
+source $ENV_PATH 
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+GUNICORN_PATH=`which gunicorn`
+
+RUNDIR=$(dirname $SOCKFILE)
+test -d $RUNDIR || mkdir -p $RUNDIR
+  
+exec $GUNICORN_PATH  --log-level=DEBUG --error-logfile=$DJANGODIR/logs/gunicorn/debug.log --access-logfile=$DJANGODIR/logs/gunicorn/access.log ${DJANGO_WSGI_MODULE}:application -c $DJANGODIR/gunicorn/gunicorn.conf.py
+
+# -->> test
+#exec $GUNICORN_PATH  --log-level=DEBUG --error-logfile=-  --access-logfile=$DJANGODIR/logs/gunicorn/access.log ${DJANGO_WSGI_MODULE}:application -c $DJANGODIR/gunicorn/gunicorn.conf.py
+
+#exec $GUNICORN_PATH --env DJANGO_SETTINGS_MODULE=config.settings.$SETTINGS --bind 10.77.3.94:80 config.wsgi:application

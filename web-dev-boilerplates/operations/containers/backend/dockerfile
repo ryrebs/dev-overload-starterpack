@@ -1,0 +1,15 @@
+FROM golang:1.13-alpine
+
+# ARG privatetoken
+
+WORKDIR /backend
+
+# Using gitlab
+# RUN  wget "--header=PRIVATE-TOKEN:$privatetoken" "repo-url"
+
+# Extract and move file outside archive
+# RUN unzip archive.zip && mv app-name-*/* .
+
+RUN cd ./src && go build && cp server /usr/bin/server
+
+ENTRYPOINT [ "/usr/bin/server" ]

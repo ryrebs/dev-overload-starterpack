@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Install and setup development packages on manjaro
+      import_tasks: manjaro-tasks.yml
+      when: ansible_distribution == 'Archlinux'
+  handlers:
+    - name: Handlers for manjaro
+      import_tasks: manjaro-handlers.yml
+      when: ansible_distribution == 'Archlinux'

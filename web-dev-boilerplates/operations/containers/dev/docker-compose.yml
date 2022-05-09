@@ -1,0 +1,61 @@
+version: "3.7"
+services:
+  backend:
+    build:
+      context: ../backend
+      # args:
+      #   - privatetoken=$PRIVATE_TOKEN
+    volumes:
+      - gopkgs:/go
+    networks:
+      - server
+    ports:
+      - 5000:5000
+    environment:
+      PORT: $PORT
+      ENV: $ENV
+      CENTRIFUGO_API_KEY: $CENTRIFUGO_API_KEY
+      SECRET_KEY: $SECRET_KEY
+
+  centrifugo:
+    build: ../centrifugoapp
+    volumes:
+      - /centrifugo
+      - type: volume
+        source: centrifugo-log
+        target: /var/log/centrifugo
+        volume:
+          nocopy: true
+    networks:
+      - monitor
+      - server
+    ports:
+      - 8000:8000
+      - 9000:9000
+    depends_on:
+      - redis
+
+  redis:
+    image: "redis:alpine"
+    networks:
+      - server
+
+  prometheus:
+    image: "prom/prometheus"
+    networks:
+      - monitor
+    ports:
+      - 9090:9090
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - centrifugo
+
+networks:
+  monitor:
+  server:
+
+volumes:
+  gopkgs:
+  centrifugo:
+  centrifugo-log:

@@ -1,0 +1,15 @@
+token_hmac_secret_key: "noneofyourbusiness"
+api_key: "aad1eaffa2acb055ec9f98874bb0944780e675f430bfdc4b91092254499f231c"
+log_level: debug
+presence: true
+join_leave: true
+history_size: 100
+history_lifetime: 180
+history_recover: true
+admin: true
+admin_password: "bigmama"
+admin_secret: "mamasecret"
+internal_port: 9000
+prometheus: true
+debug: true
+engine: "redis"

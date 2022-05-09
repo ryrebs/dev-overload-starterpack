@@ -1,0 +1,45 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    app: django-deployment # Label any key:value pair, works like tagging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      pod: django-deployment # what pods should this apply to
+  template:
+    metadata:
+      labels: 
+        pod: django-deployment # label assigned to the running pod
+    spec:
+      containers: # what containers this pod contains
+        - name: django-k8s
+          image: django-k8s:v1
+          ports:
+            - containerPort: 8000     
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: user
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password
+
+            - name: POSTGRES_HOST
+              value: postgres-service
+
+          volumeMounts:
+            - name: postgres-volume-mount
+              mountPath: /var/lib/busybox
+
+      volumes:
+        - name: postgres-volume-mount
+          persistentVolumeClaim:
+            claimName: postgres-pvc

@@ -1,0 +1,1 @@
+from sample_item_model import ItemDetails

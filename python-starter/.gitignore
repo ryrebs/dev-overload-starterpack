@@ -1,0 +1,7 @@
+study_guide
+test
+pycache/
+*.pyc
+.pytest_cache
+.venv
+*.log

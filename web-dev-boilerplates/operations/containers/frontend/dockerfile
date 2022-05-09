@@ -1,0 +1,15 @@
+FROM node:13.13.0-buster
+
+ARG privatetoken
+
+WORKDIR /frontend
+
+# Using gitlab
+# RUN  wget "--header=PRIVATE-TOKEN:$privatetoken" "repo-url"
+
+# Extract and move file outside archive
+# RUN unzip archive.zip && mv app-name-*/* .
+
+RUN npm install && npm run build
+
+CMD ["npm", "run", "pm2-runtime", "server.config.js"]

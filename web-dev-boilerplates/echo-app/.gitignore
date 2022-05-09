@@ -1,0 +1,8 @@
+bin
+centrifugo
+server
+
+# TODO: don't ignore config.yml after setting up environment variables
+config.yml
+
+.env

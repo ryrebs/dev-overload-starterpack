@@ -1,0 +1,42 @@
+{
+  "parser": "babel-eslint",
+  "plugins": ["react", "jsx-a11y", "import"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "airbnb-base",
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "jest": true,
+    "browser": true
+  },
+  "rules": {
+    "react/prefer-stateless-function": "off",
+    "react/jsx-filename-extension": "off",
+    "react/button-has-type": 1,
+    "import/prefer-default-export": 1,
+    "react/destructuring-assignment": "off",
+    "jsx-a11y/label-has-for": [
+      2,
+      {
+        "components": ["Label"],
+        "required": {
+          "some": ["nesting", "id"]
+        },
+        "allowChildren": false
+      }
+    ]
+  },
+  "globals": {
+    "Generator": true,
+    "document": true
+  }
+}

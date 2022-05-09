@@ -1,0 +1,8 @@
+# to deploy to scrapinghub
+# install shub
+    $ pip install shub
+# login using your api, can be found on the website(/account/apikey)
+    $ shub login
+    $ API Key here:
+# deploy current scrapy project
+    $ shub deploy `project id here found at the url of project details`

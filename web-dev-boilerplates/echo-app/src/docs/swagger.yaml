@@ -1,0 +1,13 @@
+basePath: /
+info:
+  contact: {}
+  description: Backend server for the sample app
+  license: {}
+  termsOfService: http://swagger.io/terms/
+  title: sample API docs
+  version: 0.1.0
+paths: {}
+swagger: "2.0"
+tags:
+- description: user authentication operations
+  name: Auth

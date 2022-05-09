@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "django-app"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django-debug-toolbar = "^3.2.1"
+django-environ = "^0.4.5"
+Django = "^3.2.4"
+gunicorn = "^20.1.0"
+black = "^21.6b0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

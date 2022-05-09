@@ -1,0 +1,21 @@
+---
+
+- hosts: test-servers
+
+  tasks :
+    - name: install nginx
+      pacman:
+        name: nginx
+        state: present
+
+      notify :
+        - start nginx
+	
+      # escalate privilege
+      become: yes
+
+  handlers : 
+    - name: start nginx
+      service : 
+        name : nginx
+        state: started

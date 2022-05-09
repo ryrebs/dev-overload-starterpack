@@ -1,0 +1,29 @@
+.errorContainer {
+  background: #1f0f08;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.errorHeader {
+  font-size: 42px;
+  line-height: 39px;
+  color: #ffffff;
+}
+
+.messageContainer {
+  font-size: 17px;
+  line-height: 26px;
+  text-align: center;
+  font-size: bold;
+  color: white;
+  opacity: 0.7;
+  width: 423px;
+  margin: 0 0 30px;
+}
+
+.mediumWidth {
+  width: 170px;
+}

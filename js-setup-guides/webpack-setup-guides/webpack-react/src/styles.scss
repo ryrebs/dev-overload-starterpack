@@ -1,0 +1,12 @@
+.box {
+  color: red;
+  background-color: black;
+  height: 100px;
+  width: 100px;
+  transition: 1s;
+}
+
+/* testing autoprefixer should result to -webkit-min-device-pixel-ratio:2 */
+@media (min-resolution: 2dppx) {
+  color: black;
+}

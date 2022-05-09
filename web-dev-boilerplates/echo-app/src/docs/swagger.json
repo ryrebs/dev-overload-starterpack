@@ -1,0 +1,19 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Backend server for the sample app",
+        "title": "sample API docs",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "license": {},
+        "version": "0.1.0"
+    },
+    "basePath": "/",
+    "paths": {},
+    "tags": [
+        {
+            "description": "user authentication operations",
+            "name": "Auth"
+        }
+    ]
+}
