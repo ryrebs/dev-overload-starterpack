@@ -209,7 +209,7 @@ func (wc writerCloser) Close() error {
 }
 ```
 
-If receivers uses any pointer then initialize using the address
+If receiver uses any pointer then initialize using the address
 
 ```
 var wc2 writerCloser = &writerCloser()

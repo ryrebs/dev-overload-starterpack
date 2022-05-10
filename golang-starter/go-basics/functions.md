@@ -123,5 +123,5 @@ type greeter struct {
 func (g greeter) greet() { // (g greeter) is a value receiver - operating on a copy
 	fmt.Println(g.greeting, g.name)
 }
-// func (g *greeter) greet() {}  - // (g greeter) is a pointer receiver - operating on a pointer
+// func (g *greeter) greet() {}  - // (g *greeter) is a pointer receiver - operating on a pointer
 ```

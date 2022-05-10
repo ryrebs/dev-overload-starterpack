@@ -1,15 +1,5 @@
 A. Slice - Describes a part of an _array_. Copied by reference
 
-Array vs Slice:
-
-    Array:
-    [...]int{1,2,3}
-    [3]int{1,2,3}
-
-    Slice:
-    make([]int, 3, 100)
-    []int{1,2,3}
-
 ```
 a := []int{1, 2, 3, 5, 6}
 b := a
