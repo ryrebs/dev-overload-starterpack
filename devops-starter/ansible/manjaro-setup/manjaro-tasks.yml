@@ -138,13 +138,7 @@
   get_url:
     url: "https://dl.google.com/go/{{ xvar.golang_version }}.linux-amd64.tar.gz"
     dest: "{{ ansible_env.HOME }}/Downloads/golang.tar.gz"
-  notify:
-    - Extract golang
-    - Remove golang tgz
-    - Add go root bin to path
-    - Export golang GOPATH
-    - Export golang GOBIN
-    - Add GOBIN to PATH
+  notify: Golang post installation setup
   tags:
     - dev
     - golang

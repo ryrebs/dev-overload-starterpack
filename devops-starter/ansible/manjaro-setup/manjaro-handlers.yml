@@ -55,39 +55,59 @@
   when:
     - xvar.email != None
 
+- name: Create golang root extraction folder
+  ansible.builtin.file:
+    path: "{{ xvar.golang_root_path }}"
+    state: directory
+    mode: "0755"
+  listen: Golang post installation setup
+
+- name: Create golang package folder
+  ansible.builtin.file:
+    path: "{{ xvar.golang_app_path }}"
+    state: directory
+    mode: "0755"
+  listen: Golang post installation setup
+
 - name: Extract golang
   unarchive:
     src: "{{ ansible_env.HOME }}/Downloads/golang.tar.gz"
-    dest: "{{ ansible_env.HOME }}/Downloads"
+    dest: "{{ xvar.golang_root_path }}"
+  listen: Golang post installation setup
 
 - name: Add go root bin to path
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     state: present
     line: "PATH=$PATH:{{ xvar.golang_root_path }}/bin"
+  listen: Golang post installation setup
 
 - name: Export golang GOPATH
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     state: present
     line: "export GOPATH={{ xvar.golang_app_path }}"
+  listen: Golang post installation setup
 
 - name: Export golang GOBIN
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     state: present
     line: "export GOBIN={{ xvar.golang_app_path }}/bin"
+  listen: Golang post installation setup
 
 - name: Add GOBIN to PATH
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     state: present
     line: "PATH=$PATH:$GOBIN"
+  listen: Golang post installation setup
 
 - name: Remove golang tgz
   file:
     path: "{{ ansible_env.HOME }}/Downloads/golang.tar.gz"
     state: absent
+  listen: Golang post installation setup
 
 - name: Add user to docker group
   user:

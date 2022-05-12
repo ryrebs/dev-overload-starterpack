@@ -2,7 +2,7 @@
 user:
 email:
 docker_compose_version: 1.25.5
-golang_version: go1.14.2
+golang_version: go1.18.2
 nvm_version: v0.35.3
-golang_root_path: ~/Downloads/go
-golang_app_path: ~/Downloads/golang_packages
+golang_root_path: ~/Downloads/Golang
+golang_app_path: ~/Downloads/Golang/packages
