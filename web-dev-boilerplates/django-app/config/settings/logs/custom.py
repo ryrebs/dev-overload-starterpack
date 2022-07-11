@@ -2,6 +2,11 @@ recs = set()
 
 
 def filter_duplicate(record):
+    """
+    Sample custom filter func.
+    Return False if lineno should
+    not be added to record, otherwise return True.
+    """
     if record.lineno in recs:
         return False
     else:
@@ -11,8 +16,11 @@ def filter_duplicate(record):
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": True,
-    # format of logs
+    ## We still want django existing loggers
+    ## to avoid creating loggers for each modules.
+    ## We only create new loggers for each module
+    ## as necessary.
+    "disable_existing_loggers": False,
     "formatters": {
         "simple": {
             "format": "[%(asctime)s] %(levelname)s %(message)s",
@@ -23,7 +31,6 @@ LOGGING = {
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
-    # when should a log be recorded
     "filters": {
         "custom_filter_duplicate": {
             "()": "django.utils.log.CallbackFilter",
@@ -36,27 +43,24 @@ LOGGING = {
             "()": "django.utils.log.RequireDebugTrue",
         },
     },
+    ## Handlers determine how each log is processed.
     "handlers": {
-        "console": {
+        "console_verbose": {
             "level": "DEBUG",
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        "development_handler": {
-            "level": "DEBUG",
+        "console": {
+            "level": "INFO",
             "filters": ["require_debug_true"],
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/django/django_development.log",  # path to log folder, should be writeable
-            "maxBytes": 1024 * 1024 * 100,  # 100MB
-            "backupCount": 5,
+            "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
         "production_handler": {
-            "level": "INFO",
+            "level": "WARNING",
             "filters": [
                 "require_debug_false",
-                "custom_filter_duplicate",
             ],
             "class": "logging.handlers.RotatingFileHandler",  # set maxsize(bytes), backup count
             "filename": "logs/django/django_production.log",  # path to log folder, should be writeable
@@ -73,16 +77,29 @@ LOGGING = {
             "class": "logging.NullHandler",
         },
     },
+    ## Create/Override the loggers.
     "loggers": {
+        ## name returned by logging.getLogger
+        "appname.module": {
+            "handlers": [
+                "production_handler",
+            ],
+            "filters": [
+                "require_debug_false",
+            ],
+            ## Set lowest log level to DEBUG
+            ## and filtered by the handlers log level.
+            "level": "INFO",
+        },
         "django": {
             "handlers": [
-                "console",
                 "production_handler",
-                "development_handler",
                 "mail_admins",
             ],
+            "level": "DEBUG",
         },
         "django.security": {
+            ## Send security logs to admin.
             "handlers": [
                 "mail_admins",
             ],
@@ -90,11 +107,13 @@ LOGGING = {
             "propagate": False,
         },
         "py.warnings": {
+            ## Log warnings on console during dev
+            ## and production for unforseen warnings.
             "handlers": [
                 "console",
                 "production_handler",
-                "development_handler",
             ],
+            "level": "DEBUG",
         },
     },
 }
