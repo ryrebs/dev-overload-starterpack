@@ -10,8 +10,7 @@ class FibonacciRpcClient(object):
         )
         self.channel = self.connection.channel()
 
-        # exclusive=True - once the consumer connection is closed the queue
-        # should be deleted
+        # exclusive=True - once the consumer connection is closed, the queue should be deleted
         # Generate random queue name with empty queue parameter.
         result = self.channel.queue_declare(queue="", exclusive=True)
         self.callback_queue = result.method.queue
