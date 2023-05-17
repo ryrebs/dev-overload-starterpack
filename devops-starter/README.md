@@ -7,3 +7,7 @@
 - [kubernetes](kubernetes) - Kubernetes guide with minikube
 
 - [chef](chef) - Chef basics
+
+- [grafana](grafana-labs) - Grafana basic setup
+
+- [vault](hashicorp-vault) - Vault basic setup
