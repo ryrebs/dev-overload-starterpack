@@ -1,0 +1,17 @@
+version: '3'
+
+volumes:
+  vault-vol:
+
+services:
+  vault:
+    image: my-app/vault:latest
+    build:
+      context: .
+      dockerfile: vault.Dockerfile
+    environment:
+      - name=value
+    volumes:
+      - HISTIGNORE="&:vault*"
+    # For Development
+    # command: ["-dev", "-dev-root-token-id=root"]

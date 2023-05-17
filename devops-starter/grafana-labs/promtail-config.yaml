@@ -1,0 +1,30 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: app_name 
+    pipeline_stages:
+      - regex:
+          expression: (?P<time>(?:\w|\W)+) - (?P<logger_name>\w+) - (?P<level>\w+) - (?P<message>.+)
+      - labels:
+          time:
+          logger_name:
+          level:
+          message:
+      - timestamp:
+          source: time
+          format: Unix
+      - tenant:
+          value: app_name
+    static_configs:
+      - labels:
+          job: app_name
+          __path__: /srv/log/<app>/*log
+          __path_exclude__: /srv/log/<app>/**log.[0-9]
