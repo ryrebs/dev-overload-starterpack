@@ -4,7 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-spark = "*"
+pandas = "*"
+pyspark = {extras = ["connect", "sql"], version = "*"}
 notebook = "*"
 
 [dev-packages]
