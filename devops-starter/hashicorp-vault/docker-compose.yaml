@@ -3,6 +3,9 @@ version: '3'
 volumes:
   vault-vol:
 
+networks:
+  vault-network:
+
 services:
   vault:
     image: my-app/vault:latest
@@ -10,8 +13,27 @@ services:
       context: .
       dockerfile: vault.Dockerfile
     environment:
-      - name=value
-    volumes:
       - HISTIGNORE="&:vault*"
-    # For Development
-    # command: ["-dev", "-dev-root-token-id=root"]
+    ## For Development
+    command: ["-dev-root-token-id=root", "-dev"]
+    ## For Prod
+    ## command: ["-config=config.hcl"]
+    volumes:
+      - vault-vol:/data
+    networks:
+      - vault-network
+
+## TODO: Setup working vault-agent
+  # vault-agent:
+  #   image: my-app/vault:latest
+  #   build:
+  #     context: .
+  #     dockerfile: vault-agent.Dockerfile
+  #   environment:
+  #     - HISTIGNORE="&:vault*"
+  #   volumes:
+  #     - ./sample-vault-agent-token:/.vault-token
+  #   networks:
+  #     - vault-network
+
+## TODO: Setup client application the use the vault agent
