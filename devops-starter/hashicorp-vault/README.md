@@ -118,7 +118,10 @@ _Make sure the current operator has the correct capabilities to run commands bel
 
 ## Setting up Vault and Vault agent
 
-Prerequisite lessons: https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-quick-start
+Pre-requisite lessons: 
+  
+  https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-quick-start
+  https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-read-secrets
 
 ### Vault agent  act as the main client for the vault instead of your application.
 
