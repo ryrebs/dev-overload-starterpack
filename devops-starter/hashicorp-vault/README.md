@@ -118,6 +118,19 @@ _Make sure the current operator has the correct capabilities to run commands bel
 
 ## Setting up Vault and Vault agent
 
+Prerequisite lessons: https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-quick-start
+
+### Vault agent  act as the main client for the vault instead of your application.
+
+Setup:
+
+  A. Vault agent with the same environment with the application/client
+
+  B.  Vault agent in a separate environment.
+
+
+Setup B Example:
+
 - Set up vault with the same setup as above.
 
 - Create a policy and role for a client app.

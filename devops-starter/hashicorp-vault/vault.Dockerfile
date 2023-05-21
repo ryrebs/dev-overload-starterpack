@@ -10,4 +10,4 @@ COPY config.hcl config.hcl
 
 COPY admin-policy.hcl admin-policy.hcl
 
-ENTRYPOINT [ "/bin/vault", "server" , "-config=config.hcl"]
+ENTRYPOINT [ "/bin/vault", "server"]
