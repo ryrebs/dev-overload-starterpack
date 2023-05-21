@@ -129,17 +129,76 @@ Setup:
 
   A. Vault agent with the same environment with the application/client
 
-  B.  Vault agent in a separate environment.
+  B. Vault agent in a separate environment.
 
 
 Setup B Example:
 
+*Side note*: It's advice to use an admin account instead of a default root account.
+
 - Set up vault with the same setup as above.
+
+  - Enable kv version 2: `vault secrets enable -version=2 kv`
 
 - Create a policy and role for a client app.
 
+  ```
+  tee scraper-policy.hcl <<EOF
+  # Read-only permit.Using kv version 2
+  path "secret/data/scraper/apikey" {
+    capabilities = ["read"]
+    }
+  EOF
+  ```
+
+  `vault policy write scraper scraper-policy.hcl`
+
 - Create secrets for the sample client.
+    
+  `vault kv put -mount=secret scraper/apikey api_key=api_key_value`
+
+- Enable approle
+
+  `vault auth enable approle`
+
+- Create named role
+
+  `vault write auth/approle/role/scraper token_policies="scraper" token_ttl=1h token_max_ttl=4h secret_id_num_uses=10`
+
+- Get secret id and role id. 
+
+  `vault read auth/approle/role/scraper/role-id`
+
+  `vault write -f auth/approle/role/scraper/secret-id`
+
+*__Important notes__*: 
+
+1. Delivery of secret and role id should be done by a trusted client.
+
+2. Deliver the secret id and role id in a separate manner.
+
+3. Use wrapped tokens to transmit a reference to these credentials instead of passing secret and role ids. See https://developer.hashicorp.com/vault/tutorials/auth-methods/approle
+
+- Sample login
+
+      vault write auth/approle/login \
+      role_id=<role-id> \
+      secret_id=<secred-id>
+
+- Check if this role or current user is capable of accessing a desired secret.
+
+  `VAULT_TOKEN=<token> vault kv get secret/scraper/apikey`
+
+- Wrapping the secret id/role id with wrap token
+
+  `vault write -wrap-ttl=120s -f auth/approle/role/scraper/secret-id`
+
+- Unwrap the secret id  with the generated token during wrapping.
+
+  `VAULT_TOKEN=<token> vault unwrap`
 
 - Setup vault agent. _See vault-agent.Dockerfile and vault-agent-config.hcl_.
+
+- Use a trusted agent (Ansible) that supplies the secret_id (Can be response wrapped) and/or role_id. See *__Important notes__*.
 
 - Create a sample python application as client that uses the vault agent to get secrets from vault.

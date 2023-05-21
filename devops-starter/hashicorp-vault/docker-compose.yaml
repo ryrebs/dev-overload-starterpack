@@ -23,17 +23,17 @@ services:
     networks:
       - vault-network
 
-## TODO: Setup working vault-agent
-  # vault-agent:
-  #   image: my-app/vault:latest
-  #   build:
-  #     context: .
-  #     dockerfile: vault-agent.Dockerfile
-  #   environment:
-  #     - HISTIGNORE="&:vault*"
-  #   volumes:
-  #     - ./sample-vault-agent-token:/.vault-token
-  #   networks:
-  #     - vault-network
+# TODO: Setup working vault-agent
+  vault-agent:
+    image: my-app/vault:latest
+    build:
+      context: .
+      dockerfile: vault-agent.Dockerfile
+    environment:
+      - HISTIGNORE="&:vault*"
+    volumes:
+      - ./vault-agent.json.tmpl:/vault/vault-agent.json.tmpl
+    networks:
+      - vault-network
 
 ## TODO: Setup client application the use the vault agent

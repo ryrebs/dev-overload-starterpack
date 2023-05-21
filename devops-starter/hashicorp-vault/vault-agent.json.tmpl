@@ -1,0 +1,5 @@
+{
+   {{ with secret "secret/data/scraper/apikey" }}
+   "api_key": "{{ .Data.data.api_key_value }}"
+   {{ end }}
+}
