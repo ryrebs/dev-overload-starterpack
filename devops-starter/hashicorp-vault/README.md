@@ -74,7 +74,7 @@
 
 ---
 
-## Setting a key/value secret and a user token that can read those secrets.
+### Setting a key/value secret and a user token that can read those secrets.
 
 - Enabling key/value v1 secrets engine.
 
@@ -82,7 +82,7 @@
 
   `vault secrets enable -path="kv-v1" -description="Test K/V v1" kv`
 
-## Sample storing of key/value pair secrets
+### Sample storing of key/value pair secrets
 
 _Make sure the current operator has the correct capabilities to run commands below._
 
@@ -92,7 +92,7 @@ _Make sure the current operator has the correct capabilities to run commands bel
 
   `vault kv put kv-v1/scraper-app/api-key/webproxyapi proxy-api=proxy-api-token`
 
-## Create app policy
+### Create app policy
 
 - Create the policy Example file: _scraper-policy.hcl_
 
@@ -102,7 +102,7 @@ _Make sure the current operator has the correct capabilities to run commands bel
 
   `vault token create -format=json -policy="scraper"`
 
-## Cleanup
+### Cleanup
 
 - Unset env variables
 
@@ -113,3 +113,17 @@ _Make sure the current operator has the correct capabilities to run commands bel
   `unset VAULT_NAMESPACE`
 
 - Remove generated files.
+
+---
+
+## Setting up Vault and Vault agent
+
+- Set up vault with the same setup as above.
+
+- Create a policy and role for a client app.
+
+- Create secrets for the sample client.
+
+- Setup vault agent. _See vault-agent.Dockerfile and vault-agent-config.hcl_.
+
+- Create a sample python application as client that uses the vault agent to get secrets from vault.
