@@ -30,3 +30,5 @@ temp
 **/.venv
 
 **/.ipynb_checkpoints
+
+**/.pyc

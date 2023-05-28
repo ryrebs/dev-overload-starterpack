@@ -1,0 +1,25 @@
+version: "3"
+
+volumes:
+  prefect-db:
+
+services:
+  prefect-orion:
+    restart: always
+    build:
+      context: .
+      dockerfile: prefect.Dockerfile
+    volumes:
+      ## For basic setup only. Remote storage is recommended.
+      ## Prefect will use a sqlite db as a default storage.
+      - prefect-db:/prefect/.prefect
+    environment:
+     - PREFECT_ORION_API_HOST=0.0.0.0
+     - HOME=/prefect
+    ports:
+      - 127.0.0.1:4200:4200
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4200/api/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
