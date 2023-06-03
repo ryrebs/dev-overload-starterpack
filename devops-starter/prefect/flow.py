@@ -32,16 +32,18 @@ def my_flow(url):
     """
     Docstring as flow description.
     """
-    # ## Cached input
-    # resp = call_api(url)
+    ## Cached input
+    resp = call_api(url)
+    print(resp)
 
-    # ## Concurrent execution
-    # t1.submit()
-    # t2.submit()
+    ## Concurrent execution is used by Task runner by default.
+    t1.submit()
+    t2.submit()
 
-    # ## Blocking
-    # t1()
+    ## Blocking task
+    t1()
 
+    ## Explicit concurrent execution
     with ThreadPoolExecutor(max_workers=5) as pool:
         futures = [pool.submit(t3, n) for n in [1,2,3]]
 
@@ -49,14 +51,13 @@ def my_flow(url):
             r = f.result()
             print(r)
         
-
+    ## Subflow
     my_flow_2()
 
-    # return resp
 
 @flow
 def my_flow_2():
     print("my_flow_2")
 
-api_result = my_flow("https://catfact.ninja/fact/")
-print(api_result)
+if __name__ == "__main__":
+    my_flow("https://catfact.ninja/fact/")
