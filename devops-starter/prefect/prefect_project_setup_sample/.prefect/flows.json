@@ -1,0 +1,4 @@
+{
+  "Flow dev app": "flow.py:my_flow",
+  "my-flow-2": "flow.py:my_flow_2"
+}

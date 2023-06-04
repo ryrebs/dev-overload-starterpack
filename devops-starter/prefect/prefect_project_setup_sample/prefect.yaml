@@ -1,0 +1,17 @@
+# File for configuring project / deployment build, push and pull steps
+
+# Generic metadata about this project
+name: prefect_project_sample
+prefect-version: 2.10.10
+
+# build section allows you to manage and build docker images
+build: null
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push: null
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.projects.steps.set_working_directory:
+    ## Absolute path to project folder that contains your flows.
+    directory: /prefect/prefect_project_setup_sample

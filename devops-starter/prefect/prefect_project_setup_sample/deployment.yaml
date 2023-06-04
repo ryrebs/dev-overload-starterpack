@@ -1,0 +1,24 @@
+deployments:
+  - name: my-flow-deployment
+    version: null
+    tags: []
+    description: null
+    schedule: {}
+    entrypoint: flow.py:my_flow
+    parameters: {}
+    work_pool:
+      name: process-work-pool-1
+      work_queue_name: process-work-pool-1-queue-1 ## Created if not exist.
+      job_variables: {}
+
+  - name: my-flow-2-deployment
+    version: null
+    tags: []
+    description: null
+    schedule: {}
+    entrypoint: flow.py:my_flow_2
+    parameters: {}
+    work_pool:
+      name: process-work-pool-1
+      work_queue_name: null ## Implies `default` work queue name
+      job_variables: {}
