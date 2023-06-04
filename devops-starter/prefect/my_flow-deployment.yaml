@@ -1,0 +1,44 @@
+###
+### A complete description of a Prefect Deployment for flow 'Flow dev app'
+###
+name: flow-dep-1
+description: Docstring as flow description.
+version: dev_01
+# The work queue that will handle this deployment's runs
+work_queue_name: dep-1
+work_pool_name: null
+tags: []
+parameters: {}
+schedule: null
+is_schedule_active: null
+infra_overrides: {}
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  block_type_slug: process
+  _block_type_slug: process
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: Flow dev app
+manifest_path: null
+storage: null
+path: /run/media/amniuz/data/Rps/public/dev-overload-starter-pack/devops-starter/prefect
+entrypoint: flow.py:my_flow
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    url:
+      title: url
+      position: 0
+  required:
+  - url
+  definitions: null
+timestamp: '2023-06-04T17:36:33.348333+00:00'
