@@ -12,6 +12,10 @@
 
 ### Deployment using yaml configurations.
 
+- Export the prefect api url env variable:
+
+        export PREFECT_API_URL=http://<prefect-ip>/api
+
 - Build a basic deployment configuration file:
 
        prefect deployment build ./<python-file>:<entrypoint-flow-function> -n <deployment-name> -q <work-pool>
@@ -24,11 +28,11 @@
 
 - Run the default agent to accept jobs at \<work-queue\>.
 
-        prefect agent start -q <work-pool>
+        prefect agent start -q <work-queue>
 
-- Or create a pool with type _Process_ and create a work queue (Default queue is also created.). Then run the process and queue with:
+- Or create a pool with type _Process_ (default) and create a work queue (Default queue is also created.). Then run the process and queue with:
 
-        prefect worker start --pool <pool-name> --work-queue <default|custom-queue-name>
+        prefect worker start --pool <pool-name> --work-queue <default|manually-created-custom-queue-name->
 
 - Run the flow
 
