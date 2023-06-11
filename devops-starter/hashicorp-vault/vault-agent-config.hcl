@@ -1,4 +1,5 @@
 vault {
+   ## Vault service address.
    address = "vault:8200"
    tls_skip_verify = true
 }
@@ -11,7 +12,7 @@ auto_auth {
       ## File path to the secret id
       secret_id_file_path = "secret_id_file_path-webapp"
       ## Path to the secret_id role: e.g auth/approle/role/webservers/secret-id
-      ## If set `secret_id_file_path` is expected to contain a response wrapping token.
+      ## If set, `secret_id_file_path` is expected to contain a response wrapping token.
       secret_id_response_wrapping_path = auth/approle/role/scraper/secret-id
     }
   }
@@ -33,6 +34,7 @@ template {
 }
 
 listener "tcp" {
+   ## Vault agent client address. Use this address to request for secrets.
    address     = "127.0.0.1:8100"
    tls_disable = true
 }

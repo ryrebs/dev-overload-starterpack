@@ -4,7 +4,7 @@ path "sys/health"
   capabilities = ["read", "sudo"]
 }
 
-# Create and manage ACL policies broadly across Vault
+## --- Create and manage ACL policies broadly across Vault
 
 # List existing policies
 path "sys/policies/acl"
@@ -18,7 +18,7 @@ path "sys/policies/acl/*"
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
 
-# Enable and manage authentication methods broadly across Vault
+## --- Enable and manage authentication methods broadly across Vault
 
 # Manage auth methods broadly across Vault
 path "auth/*"
@@ -39,8 +39,6 @@ path "sys/auth"
 }
 
 # Enable and manage the key/value secrets engine at `secret/` path
-
-# List, create, update, and delete key/value secrets
 path "secret/*"
 {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
@@ -68,9 +66,8 @@ path "kv-v1/*" {
   capabilities = [ "create", "read", "update", "delete", "list" ]
 }
 
-##----
+## --- Approle policy requirements
 
-## Approle policy requirements
 # Mount the AppRole auth method
 path "sys/auth/approle" {
   capabilities = [ "create", "read", "update", "delete", "sudo" ]

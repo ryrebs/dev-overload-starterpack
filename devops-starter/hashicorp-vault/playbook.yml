@@ -1,0 +1,163 @@
+---
+- hosts: localhost
+  vars_files:
+    - vars.yml
+  tasks:
+    ## TODO: Automate production setup.
+    ##        - Running `vault operator init`
+    ##        - Obtaining unseal keys
+
+    ## ------------ As a root user ------------ ##
+    ## Assumptions:
+    ##    - Production vault instance is setup
+    ##    - Vault runs on a docker container
+    - name: Remove vault token file (First time vault instance run.)
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        command: /bin/sh -c "rm -f /root/.vault_token"
+      register: remove_token_output
+      tags:
+        - one-time
+        - setup
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+
+    - name: Enable vault kv version 2
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN={{ vault_root_token }} vault secrets enable -version=2 kv
+      register: enable_kv2_output
+      failed_when:
+        - "enable_kv2_output.rc > 0"
+        - '"path is already in use at kv/" not in enable_kv2_output.stderr'
+      tags:
+        - setup
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+
+    - name: Enable approle
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN={{ vault_root_token }} vault auth enable approle
+      register: enable_approle_output
+      failed_when:
+        - "enable_approle_output.rc > 0"
+        - '"path is already in use at approle/" not in enable_approle_output.stderr'
+      tags:
+        - setup
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+
+    - name: Create admin policy
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_root_token }} \
+            vault policy write admin - <<EOF
+            {{lookup('file', 'admin-policy.hcl')}}
+            EOF
+      tags:
+        - setup
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+
+    - name: Vault cleanup
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            unset VAULT_TOKEN
+            unset VAULT_ADDR
+            unset VAULT_NAMESPACE
+            rm -f /root/.vault_token
+      tags:
+        - setup
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+
+    - name: Create admin user
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_root_token }} \
+            vault token create -format=json -policy="admin"
+      register: create_admin_output
+      notify: Get create admin output
+      tags:
+        - create-admin
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+
+    ## ------------ As admin user ------------ ##
+    - name: Create a policy for the client app
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault policy write {{ client_policy_name }} - <<EOF
+            {{ lookup('file', '{{ client_policy_file }}') }}
+            EOF
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+        - vault_admin_token is defined and vault_admin_token != ""
+        - client_policy_file is defined and client_policy_file  != ""
+        - client_policy_name is defined and client_policy_name != ""
+      tags:
+        - create-policy
+
+    - name: Create a role for the client app
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault write auth/approle/role/{{ client_role }} \
+            token_policies="{{ client_policy_name }}" \
+            token_ttl=1h \
+            token_max_ttl=4h \
+            secret_id_num_uses=10
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+        - vault_admin_token is defined and vault_admin_token != ""
+        - client_role is defined and client_role  != ""
+        - client_policy_name is defined and client_policy_name != ""
+      tags:
+        - create-app-role
+
+    # TODO:
+    # - name: Set secrets
+    # - name: Get role id
+    # - name: Get wrapped secret id
+    
+    # TODO:
+    # Initialize vault agent.
+
+  handlers:
+    - name: Get create admin output
+      debug:
+        msg: "{{ create_admin_output.stdout | from_json }}"

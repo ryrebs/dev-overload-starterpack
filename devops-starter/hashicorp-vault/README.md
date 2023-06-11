@@ -32,7 +32,7 @@
 
 - Create admin token:
 
-  - Create the admin policy:
+  - Create the admin policy file and upload it to vault:
 
     `vault policy write admin admin-policy.hcl`
 
@@ -92,16 +92,6 @@ _Make sure the current operator has the correct capabilities to run commands bel
 
   `vault kv put kv-v1/scraper-app/api-key/webproxyapi proxy-api=proxy-api-token`
 
-### Create app policy
-
-- Create the policy Example file: _scraper-policy.hcl_
-
-- See `create admin policy`
-
-- Create token with the create policy
-
-  `vault token create -format=json -policy="scraper"`
-
 ### Cleanup
 
 - Unset env variables
@@ -114,27 +104,28 @@ _Make sure the current operator has the correct capabilities to run commands bel
 
 - Remove generated files.
 
+  `rm <custom|docker-set-work-dir>/.vault-token`
+
 ---
 
-## Setting up Vault and Vault agent
+## Setting up Vault with approle and Vault agent and sample python app.
 
-Pre-requisite lessons: 
-  
-  https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-quick-start
-  https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-read-secrets
+Pre-requisite lessons:
 
-### Vault agent  act as the main client for the vault instead of your application.
+https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-quick-start
+https://developer.hashicorp.com/vault/tutorials/vault-agent/agent-read-secrets
+
+### Vault agent act as the main client for the vault instead of your application.
 
 Setup:
 
-  A. Vault agent with the same environment with the application/client
+A. Vault agent with the same environment with the application/client
 
-  B. Vault agent in a separate environment.
-
+B. Vault agent in a separate environment.
 
 Setup B Example:
 
-*Side note*: It's advice to use an admin account instead of a default root account.
+_Side note_: It's advice to use an admin account instead of a default root account.
 
 - Set up vault with the same setup as above.
 
@@ -154,7 +145,7 @@ Setup B Example:
   `vault policy write scraper scraper-policy.hcl`
 
 - Create secrets for the sample client.
-    
+
   `vault kv put -mount=secret scraper/apikey api_key=api_key_value`
 
 - Enable approle
@@ -163,15 +154,19 @@ Setup B Example:
 
 - Create named role
 
-  `vault write auth/approle/role/scraper token_policies="scraper" token_ttl=1h token_max_ttl=4h secret_id_num_uses=10`
+      vault write auth/approle/role/scraper \ # "scraper" is the role that you want to create
+      token_policies="scraper" \ # Policy name
+      token_ttl=1h \
+      token_max_ttl=4h \
+      secret_id_num_uses=10 # Secret ID valid for only 10 uses
 
-- Get secret id and role id. 
+- Get secret id and role id.
 
   `vault read auth/approle/role/scraper/role-id`
 
   `vault write -f auth/approle/role/scraper/secret-id`
 
-*__Important notes__*: 
+_**Important notes**_:
 
 1. Delivery of secret and role id should be done by a trusted client.
 
@@ -179,7 +174,7 @@ Setup B Example:
 
 3. Use wrapped tokens to transmit a reference to these credentials instead of passing secret and role ids. See https://developer.hashicorp.com/vault/tutorials/auth-methods/approle
 
-- Sample login
+- Get the login token with:
 
       vault write auth/approle/login \
       role_id=<role-id> \
@@ -193,12 +188,54 @@ Setup B Example:
 
   `vault write -wrap-ttl=120s -f auth/approle/role/scraper/secret-id`
 
-- Unwrap the secret id  with the generated token during wrapping.
+- Unwrap the secret id with the generated token during wrapping.
 
   `VAULT_TOKEN=<token> vault unwrap`
 
 - Setup vault agent. _See vault-agent.Dockerfile and vault-agent-config.hcl_.
 
-- Use a trusted agent (Ansible) that supplies the secret_id (Can be response wrapped) and/or role_id. See *__Important notes__*.
+- Use a trusted agent (Ansible) that supplies the secret\*id (Can be response wrapped) and/or role_id. See **\*Important notes**\_.
 
 - Create a sample python application as client that uses the vault agent to get secrets from vault.
+
+### Automation with ansible
+
+- TODO: Initial vault setup.
+
+- Encrypted `vars.yml` is for development only.
+
+- Ansible decryption password is `dev`.
+
+- Setup vault (Add user, enable auth and secret engines etc..)
+
+      pipenv run ansible-playbook playbook.yml \
+        --tags root,setup \
+        --ask-vault-pass \
+        --extra-vars "vault_container_name=<container-name>"
+
+- Create admin user
+
+      pipenv run ansible-playbook playbook.yml \
+        --tags root,create-admin \
+        --ask-vault-pass \
+        --extra-vars "vault_container_name=<container-name>"
+
+- Create policy for the client app
+
+      pipenv run ansible-playbook playbook.yml \
+      --tags create-policy \
+      --ask-vault-pass \
+      --extra-vars \
+      "vault_container_name=<container-name> \
+      client_policy_file=<client-policy-file.hcl> \
+      client_policy_name=<client-policy-name>"
+
+- Create an app role for the client app
+
+      pipenv run ansible-playbook playbook.yml \
+      --tags create-app-role \
+      --ask-vault-pass \
+      --extra-vars \
+      "vault_container_name=<container-name> \
+      client_role=<client-role> \
+      client_policy_name=<client-policy-name>"
