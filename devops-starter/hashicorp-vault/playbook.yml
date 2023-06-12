@@ -149,15 +149,106 @@
       tags:
         - create-app-role
 
-    # TODO:
-    # - name: Set secrets
-    # - name: Get role id
-    # - name: Get wrapped secret id
-    
-    # TODO:
-    # Initialize vault agent.
+    - name: Create kv2 vault secrets
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault kv put -mount=secret \
+            {{ secret_path }} \
+            {{ key_value_pair }}
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+        - secret_path is defined and secret_path != ""
+        - key_value_pair is defined and key_value_pair  != ""
+      tags:
+        - create-vault-secrets
+
+    - name: Get kv2 vault secrets
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault kv get -mount=secret \
+            --format=json \
+            {{ secret_path }}
+      register: get_kv2_vault_secret_output
+      notify: Get kv2 vault secrets output
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+        - secret_path is defined and secret_path != ""
+      tags:
+        - get-vault-secrets
+
+    - name: Get approle id
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault read auth/approle/role/{{ app_role }}/role-id \
+            --format=json
+      register: get_approle_id_output
+      notify: Get approle id output
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+        - app_role is defined and app_role != ""
+      tags:
+        - get-approle-id
+
+    - name: Get wrapped secret id
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault write -wrap-ttl={{ wrap_ttl | default('120s', true) }} \
+            -f auth/approle/role/{{ app_role }}/secret-id \
+            --format=json
+      register: get_wrapped_secret_id_output
+      notify: Get wrapped secret id output
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+        - app_role is defined and app_role != ""
+      tags:
+        - get-wrapped-secret-id
+
+    - name: Start vault agent with necessary credentials
+      ansible.builtin.include_tasks:
+        file: vault_agent_init.yml
+        apply:
+          tags:
+            - vault-agent-init
+      tags:
+        - vault-agent-init
 
   handlers:
     - name: Get create admin output
       debug:
         msg: "{{ create_admin_output.stdout | from_json }}"
+
+    - name: Get kv2 vault secrets output
+      debug:
+        msg: "{{ get_kv2_vault_secret_output.stdout }}"
+
+    - name: Get approle id output
+      debug:
+        msg: "{{ get_approle_id_output.stdout }}"
+
+    - name: Get wrapped secret id output
+      debug:
+        msg: "{{ get_wrapped_secret_id_output.stdout }}"
