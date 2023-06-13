@@ -29,4 +29,4 @@
         token_policies={{ client_name }} \
         token_ttl=1h \
         token_max_ttl=4h \
-        secret_id_num_uses=10
+        secret_id_num_uses=10  

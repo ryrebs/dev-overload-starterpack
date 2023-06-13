@@ -13,19 +13,19 @@
     ##    - Vault runs on a docker container
     - name: Remove vault token file (First time vault instance run.)
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         command: /bin/sh -c "rm -f /root/.vault_token"
       register: remove_token_output
       tags:
         - one-time
         - setup
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
       no_log: true
 
     - name: Enable vault kv version 2
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -43,7 +43,7 @@
 
     - name: Enable approle
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory}}"
         argv:
           - sh
           - -c
@@ -56,12 +56,12 @@
       tags:
         - setup
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
       no_log: true
 
     - name: Create admin policy
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -79,7 +79,7 @@
 
     - name: Create admin user
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -88,7 +88,7 @@
             VAULT_TOKEN={{ vault_root_token }} \
             vault token create -format=json -policy=admin
       register: create_admin_output
-      notify: Get create admin output file
+      notify: Create admin token file
       tags:
         - create-admin
       when:
@@ -97,7 +97,7 @@
 
     - name: Vault cleanup
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -114,7 +114,7 @@
     ## ------------ As admin user ------------ ##
     - name: Create a policy for the client app
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -134,7 +134,7 @@
 
     - name: Create a role for the client app
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -156,7 +156,7 @@
 
     - name: Create kv2 vault secrets
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -175,7 +175,7 @@
 
     - name: Get kv2 vault secrets
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -195,17 +195,19 @@
 
     - name: Get approle id
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
           - |
             VAULT_ADDR=http://127.0.0.1:8200 \
             VAULT_TOKEN={{ vault_admin_token }} \
-            vault read auth/approle/role/{{ app_role }}/role-id \
-            --format=json
+            vault read --format=json \
+            auth/approle/role/{{ app_role }}/role-id
       register: get_approle_id_output
-      notify: Get approle id output
+      notify:
+        - Get approle id output
+        - Create roleid file
       when:
         - vault_container_name is defined and vault_container_name != ""
         - app_role is defined and app_role != ""
@@ -214,7 +216,7 @@
 
     - name: Get wrapped secret id
       community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
+        container: "{{ vault_container_name | mandatory }}"
         argv:
           - sh
           - -c
@@ -222,10 +224,12 @@
             VAULT_ADDR=http://127.0.0.1:8200 \
             VAULT_TOKEN={{ vault_admin_token }} \
             vault write -wrap-ttl={{ wrap_ttl | default('120s', true) }} \
-            -f auth/approle/role/{{ app_role }}/secret-id \
-            --format=json
+            --format=json \
+            -f auth/approle/role/{{ app_role }}/secret-id
       register: get_wrapped_secret_id_output
-      notify: Get wrapped secret id output
+      notify:
+        - Get wrapped secret id output
+        - Create secretid file
       when:
         - vault_container_name is defined and vault_container_name != ""
         - app_role is defined and app_role != ""
@@ -255,12 +259,12 @@
         - vault_admin_token is defined and vault_admin_token != ""
 
   handlers:
-    - name: Get create admin output file
-      ansible.builtin.blockinfile:
-        create: true
-        path: ./tmp/admin-token-{{ ansible_date_time.iso8601 }}.json
-        block: |
-          "{{ create_admin_output.stdout }}"
+    - name: Create admin token file
+      copy:
+        dest: "{{ src_admin_token_folder | default('tmp', true) }}/admin-token"
+        content: |
+          {{ create_admin_output.stdout | from_json | json_query('auth.client_token') }}
+      no_log: true
 
     - name: Get kv2 vault secrets output
       debug:
@@ -273,3 +277,15 @@
     - name: Get wrapped secret id output
       debug:
         msg: "{{ get_wrapped_secret_id_output.stdout }}"
+
+    - name: Create roleid file
+      copy:
+        dest: "{{ src_roleid_folder | default('tmp', true) }}/roleid"
+        content: |
+          {{ get_approle_id_output.stdout | from_json | json_query('data.role_id') }}
+
+    - name: Create secretid file
+      copy:
+        dest: "{{ src_secretid_folder | default('tmp', true) }}/secretid"
+        content: |
+          {{ get_wrapped_secret_id_output.stdout | from_json | json_query('wrap_info.token') }}
