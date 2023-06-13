@@ -21,6 +21,7 @@
         - setup
       when:
         - vault_container_name is defined and vault_container_name != ""
+      no_log: true
 
     - name: Enable vault kv version 2
       community.docker.docker_container_exec:
@@ -38,6 +39,7 @@
         - setup
       when:
         - vault_container_name is defined and vault_container_name != ""
+      no_log: true
 
     - name: Enable approle
       community.docker.docker_container_exec:
@@ -55,6 +57,7 @@
         - setup
       when:
         - vault_container_name is defined and vault_container_name != ""
+      no_log: true
 
     - name: Create admin policy
       community.docker.docker_container_exec:
@@ -72,6 +75,25 @@
         - setup
       when:
         - vault_container_name is defined and vault_container_name != ""
+      no_log: true
+
+    - name: Create admin user
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_root_token }} \
+            vault token create -format=json -policy=admin
+      register: create_admin_output
+      notify: Get create admin output file
+      tags:
+        - create-admin
+      when:
+        - vault_container_name is defined and vault_container_name != ""
+      no_log: true
 
     - name: Vault cleanup
       community.docker.docker_container_exec:
@@ -83,26 +105,9 @@
             unset VAULT_TOKEN
             unset VAULT_ADDR
             unset VAULT_NAMESPACE
-            rm -f /root/.vault_token
+            rm -rvf /root/.vault-token
       tags:
         - setup
-      when:
-        - vault_container_name is defined and vault_container_name != ""
-
-    - name: Create admin user
-      community.docker.docker_container_exec:
-        container: "{{ vault_container_name }}"
-        argv:
-          - sh
-          - -c
-          - |
-            VAULT_ADDR=http://127.0.0.1:8200 \
-            VAULT_TOKEN={{ vault_root_token }} \
-            vault token create -format=json -policy="admin"
-      register: create_admin_output
-      notify: Get create admin output
-      tags:
-        - create-admin
       when:
         - vault_container_name is defined and vault_container_name != ""
 
@@ -237,9 +242,12 @@
         - vault-agent-init
 
   handlers:
-    - name: Get create admin output
-      debug:
-        msg: "{{ create_admin_output.stdout | from_json }}"
+    - name: Get create admin output file
+      ansible.builtin.blockinfile:
+        create: true
+        path: ./tmp/admin-token-{{ ansible_date_time.iso8601 }}.json
+        block: |
+          "{{ create_admin_output.stdout }}"
 
     - name: Get kv2 vault secrets output
       debug:

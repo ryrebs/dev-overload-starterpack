@@ -14,11 +14,10 @@ services:
       dockerfile: vault.Dockerfile
     environment:
       - HISTIGNORE="&:vault*"
-    ## For Development
+    ##  Override CMD for development
     command: ["-dev-root-token-id=root", "-dev"]
-    ## For Prod
-    ## command: ["-config=config.hcl"]
     volumes:
+      ## Storage setup
       - vault-vol:/data
     networks:
       - vault-network
