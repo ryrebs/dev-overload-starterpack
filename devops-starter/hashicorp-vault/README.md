@@ -220,24 +220,15 @@ _**Important notes**_:
         --ask-vault-pass \
         --extra-vars "vault_container_name=<container-name>"
 
-- Create policy for the client app
+- Initialize a basic setup for the client
 
       pipenv run ansible-playbook playbook.yml \
-      --tags create-policy \
-      --ask-vault-pass \
-      --extra-vars \
-      "vault_container_name=<container-name> \
-      client_policy_file=<client-policy-file.hcl> \
-      client_policy_name=<client-policy-name>"
+        --tags vault-client-init \
+        --ask-vault-pass \
+        --extra-vars \
+        "vault_container_name=hashicorp-vault_vault_1 \
+        client_name=<client_name> \
+        vault_admin_token=<admin-token>"
 
-- Create an app role for the client app
-
-      pipenv run ansible-playbook playbook.yml \
-      --tags create-app-role \
-      --ask-vault-pass \
-      --extra-vars \
-      "vault_container_name=<container-name> \
-      client_role=<client-role> \
-      client_policy_name=<client-policy-name>"
 
 See `playbook.yml` for other tasks.

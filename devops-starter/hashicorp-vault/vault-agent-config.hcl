@@ -1,15 +1,13 @@
+## Docker container Vault service address.
 vault {
-   ## Vault service address.
-   address = "vault:8200"
+   address = "http://vault:8200"
    tls_skip_verify = true
 }
 
 auto_auth {
   method "approle" {
     config = {
-      ## File path to the role id 
       role_id_file_path = "role_id_file_path"
-      ## File path to the secret id
       secret_id_file_path = "secret_id_file_path-webapp"
       ## Path to the secret_id role: e.g auth/approle/role/webservers/secret-id
       ## If set, `secret_id_file_path` is expected to contain a response wrapping token.
@@ -33,9 +31,10 @@ template {
    destination = "/vault/vault-agent.json"
 }
 
+## Docker container setup
+## Vault agent client address. Use this address to request for secrets.
 listener "tcp" {
-   ## Vault agent client address. Use this address to request for secrets.
-   address     = "127.0.0.1:8100"
+   address     = "0.0.0.0:8100"
    tls_disable = true
 }
 

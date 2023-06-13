@@ -14,15 +14,14 @@ services:
       dockerfile: vault.Dockerfile
     environment:
       - HISTIGNORE="&:vault*"
-    ##  Override CMD for development
-    command: ["-dev-root-token-id=root", "-dev"]
+    command: ["-dev", "-dev-root-token-id=root"] # Dev
+    # command: ["-config=/vault/config.hcl"] # Prod
     volumes:
-      ## Storage setup
       - vault-vol:/data
+      # - $VAULT_CONFIG_FILEPATH:/vault/config.hcl # Prod
     networks:
       - vault-network
 
-# TODO: Setup working vault-agent
   vault-agent:
     image: my-app/vault:latest
     build:
@@ -30,8 +29,14 @@ services:
       dockerfile: vault-agent.Dockerfile
     environment:
       - HISTIGNORE="&:vault*"
+    command: ["-config=/vault/config.hcl"]
+    ports:
+      - 127.0.0.0:8100:8100
     volumes:
-      - ./vault-agent.json.tmpl:/vault/vault-agent.json.tmpl
+      - ./vault-agent.tmpl:/vault/vault-agent.tmpl
+      - $VAULT_AGENT_CONFIG_FILEPATH:/vault/config.hcl
+      - ./tmp/roleid:/etc/vault/roleid
+      - ./tmp/secretid:/etc/vault/secretid
     networks:
       - vault-network
 

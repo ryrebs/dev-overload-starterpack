@@ -1,0 +1,32 @@
+---
+## Example setup only.
+- name: Create a policy for scraper client app
+  community.docker.docker_container_exec:
+    container: "{{ vault_container_name }}"
+    argv:
+      - sh
+      - -c
+      - |
+        VAULT_ADDR=http://127.0.0.1:8200 \
+        VAULT_TOKEN={{ vault_admin_token }} \
+        vault policy write {{ client_name }} - <<EOF
+        {{ lookup('file', "{{ client_name }}-policy.hcl") }}
+        EOF
+  when:
+    - vault_container_name is defined and vault_container_name != ""
+    - vault_admin_token is defined and vault_admin_token != ""
+
+- name: Create a role for the client app
+  community.docker.docker_container_exec:
+    container: "{{ vault_container_name }}"
+    argv:
+      - sh
+      - -c
+      - |
+        VAULT_ADDR=http://127.0.0.1:8200 \
+        VAULT_TOKEN={{ vault_admin_token }} \
+        vault write auth/approle/role/{{ client_name }} \
+        token_policies={{ client_name }} \
+        token_ttl=1h \
+        token_max_ttl=4h \
+        secret_id_num_uses=10
