@@ -14,11 +14,12 @@ services:
       dockerfile: vault.Dockerfile
     environment:
       - HISTIGNORE="&:vault*"
-    command: ["-dev", "-dev-root-token-id=root"] # Dev
-    # command: ["-config=/vault/config.hcl"] # Prod
+    command: ["-dev", "-dev-root-token-id=root"] # Dev setup, remove for prod
+    ports:
+      - 127.0.0.0:8200:8200
     volumes:
       - vault-vol:/data
-      # - $VAULT_CONFIG_FILEPATH:/vault/config.hcl # Prod
+      - $VAULT_CONFIG_FILEPATH:/vault/config.hcl
     networks:
       - vault-network
 
@@ -29,7 +30,6 @@ services:
       dockerfile: vault-agent.Dockerfile
     environment:
       - HISTIGNORE="&:vault*"
-    command: ["-config=/vault/config.hcl"]
     ports:
       - 127.0.0.0:8100:8100
     volumes:
@@ -39,5 +39,3 @@ services:
       - ./tmp/secretid:/etc/vault/secretid
     networks:
       - vault-network
-
-## TODO: Setup client application the use the vault agent
