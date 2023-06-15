@@ -1,3 +1,5 @@
+pid_file = "/vault/pidfile"
+
 ## Docker container Vault service address.
 vault {
    address = "http://vault:8200"
@@ -11,7 +13,7 @@ auto_auth {
       secret_id_file_path = "secret_id_file_path-webapp"
       ## Path to the secret_id role: e.g auth/approle/role/webservers/secret-id
       ## If set, `secret_id_file_path` is expected to contain a response wrapping token.
-      secret_id_response_wrapping_path = auth/approle/role/scraper/secret-id
+      secret_id_response_wrapping_path = "auth/approle/role/<role-name>/secret-id"
     }
   }
 

@@ -1,32 +1,113 @@
+## Note: Sample setup is applicable only with client name `scraper`
+## This is setup is only applicable when the following conditions are true:
+## 1. Vault is in a docker container
+## 2. Vault agent is in docker container
+## 3. Client policy is scraper-policy.hcl
+## 4. Vault agent config  is vault-agent-config.hcl
+## 5. Secret template file is vault-agent.json.tmpl
 ---
-## Example setup only.
-- name: Create a policy for scraper client app
-  community.docker.docker_container_exec:
-    container: "{{ vault_container_name }}"
-    argv:
-      - sh
-      - -c
-      - |
-        VAULT_ADDR=http://127.0.0.1:8200 \
-        VAULT_TOKEN={{ vault_admin_token }} \
-        vault policy write {{ client_name }} - <<EOF
-        {{ lookup('file', "{{ client_name }}-policy.hcl") }}
-        EOF
-  when:
-    - vault_container_name is defined and vault_container_name != ""
-    - vault_admin_token is defined and vault_admin_token != ""
+- hosts: localhost
+  tasks:
+    - name: Define needed variables
+      ansible.builtin.set_fact:
+        vault_container_name_: "{{ vault_container_name | mandatory | default('define-a-valid-container', true) }}"
+        vault_admin_token_: "{{ vault_admin_token | mandatory | default('define-a-valid-admin-token', true) }}"
+        docker_compose_dir_: "{{ docker_compose_dir | default('{{ playbook_dir }}', true) }}"
+        service_: "{{ service | mandatory | default('define-a-valid-service-dir', true) }}"
+        project_name: hashicorp-vault
 
-- name: Create a role for the client app
-  community.docker.docker_container_exec:
-    container: "{{ vault_container_name }}"
-    argv:
-      - sh
-      - -c
-      - |
-        VAULT_ADDR=http://127.0.0.1:8200 \
-        VAULT_TOKEN={{ vault_admin_token }} \
-        vault write auth/approle/role/{{ client_name }} \
-        token_policies={{ client_name }} \
-        token_ttl=1h \
-        token_max_ttl=4h \
-        secret_id_num_uses=10  
+    - name: Create a policy for scraper client app
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name_ }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token_ }} \
+            vault policy write {{ client_name }} - <<EOF
+            {{ lookup('file', "{{ client_name }}-policy.hcl") }}
+            EOF
+
+    - name: Create a role for the client app
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name_ }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token_ }} \
+            vault write auth/approle/role/{{ client_name }} \
+            token_policies={{ client_name }} \
+            token_ttl=1h \
+            token_max_ttl=4h \
+            secret_id_num_uses=10
+
+    - name: Create sample secrets
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name | mandatory }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token }} \
+            vault kv put -mount=secret scraper/apikey \
+            apikey=my-api-key apikey_value=my-api-key-value
+
+    - name: Run the vault agent service
+      docker_compose:
+        project_name: "{{ project_name }}"
+        project_src: "{{ docker_compose_dir_ }}"
+        build: yes
+        nocache: yes
+        state: present
+        remove_orphans: yes
+        services: "{{ service_ }}"
+
+    - name: Get approle id
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name_ }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token_ }} \
+            vault read --format=json \
+            auth/approle/role/{{ client_name }}/role-id
+      register: get_approle_id_output
+
+    - name: Get wrapped secret id
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name_ }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 \
+            VAULT_TOKEN={{ vault_admin_token_ }} \
+            vault write -wrap-ttl=999 \
+            --format=json \
+            -f auth/approle/role/{{ client_name }}/secret-id
+      register: get_wrapped_secret_id_output
+
+    - name: Inject roleid on vault agent container
+      community.docker.docker_container_exec:
+        container: "{{ project_name }}_{{ service_ }}_1"
+        command: |
+          /bin/sh -c 
+          "echo {{ get_approle_id_output.stdout | from_json | json_query('data.role_id') }} > /vault/roleid"
+      when: get_approle_id_output is success
+
+    - name: Inject secretid on vault agent container
+      community.docker.docker_container_exec:
+        container: "{{ project_name }}_{{ service_ }}_1"
+        command: |
+          /bin/sh -c 
+          "echo {{ get_wrapped_secret_id_output.stdout | from_json | json_query('wrap_info.token') }} > /vault/secretid"
+      when: get_wrapped_secret_id_output is success
+
+    ## Feature: Remove the secret files after a service is ran.
+    ## E.g After a webapp reads from db or initialize a db connection.

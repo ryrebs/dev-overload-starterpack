@@ -23,6 +23,21 @@
         - vault_container_name != ""
       no_log: true
 
+    - name: Enable audit logs
+      community.docker.docker_container_exec:
+        container: "{{ vault_container_name | mandatory }}"
+        argv:
+          - sh
+          - -c
+          - |
+            VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN={{ vault_root_token }} \
+            vault audit enable file file_path="{{ log_file_path | default('/logs/vault_audit.log', true) }}"
+      tags:
+        - setup
+      when:
+        - vault_container_name != ""
+      no_log: true
+
     - name: Enable vault kv version 2
       community.docker.docker_container_exec:
         container: "{{ vault_container_name | mandatory }}"
@@ -38,7 +53,7 @@
       tags:
         - setup
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
       no_log: true
 
     - name: Enable approle
@@ -74,7 +89,7 @@
       tags:
         - setup
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
       no_log: true
 
     - name: Create admin user
@@ -92,7 +107,7 @@
       tags:
         - create-admin
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
       no_log: true
 
     - name: Vault cleanup
@@ -109,7 +124,7 @@
       tags:
         - setup
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
 
     ## ------------ As admin user ------------ ##
     - name: Create a policy for the client app
@@ -125,7 +140,7 @@
             {{ lookup('file', '{{ client_policy_file }}') }}
             EOF
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
         - vault_admin_token is defined and vault_admin_token != ""
         - client_policy_file is defined and client_policy_file  != ""
         - client_policy_name is defined and client_policy_name != ""
@@ -147,7 +162,7 @@
             token_max_ttl=4h \
             secret_id_num_uses=10
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
         - vault_admin_token is defined and vault_admin_token != ""
         - client_role is defined and client_role  != ""
         - client_policy_name is defined and client_policy_name != ""
@@ -163,11 +178,11 @@
           - |
             VAULT_ADDR=http://127.0.0.1:8200 \
             VAULT_TOKEN={{ vault_admin_token }} \
-            vault kv put -mount=secret \
+            vault kv patch -mount=secret \
             {{ secret_path }} \
             {{ key_value_pair }}
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
         - secret_path is defined and secret_path != ""
         - key_value_pair is defined and key_value_pair  != ""
       tags:
@@ -188,7 +203,7 @@
       register: get_kv2_vault_secret_output
       notify: Get kv2 vault secrets output
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
         - secret_path is defined and secret_path != ""
       tags:
         - get-vault-secrets
@@ -205,11 +220,9 @@
             vault read --format=json \
             auth/approle/role/{{ app_role }}/role-id
       register: get_approle_id_output
-      notify:
-        - Get approle id output
-        - Create roleid file
+      notify: Get approle id output
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
         - app_role is defined and app_role != ""
       tags:
         - get-approle-id
@@ -227,65 +240,20 @@
             --format=json \
             -f auth/approle/role/{{ app_role }}/secret-id
       register: get_wrapped_secret_id_output
-      notify:
-        - Get wrapped secret id output
-        - Create secretid file
+      notify: Get wrapped secret id output
       when:
-        - vault_container_name is defined and vault_container_name != ""
+        - vault_container_name != ""
         - app_role is defined and app_role != ""
       tags:
         - get-wrapped-secret-id
 
-    - name: Start vault agent with necessary credentials
-      ansible.builtin.include_tasks:
-        file: vault_agent_init.yml
-        apply:
-          tags:
-            - vault-agent-init
-      tags:
-        - vault-agent-init
-
-    - name: Setup vault client role and policy
-      ansible.builtin.include_tasks:
-        file: vault_client_{{ client_name }}_init.yml
-        apply:
-          tags:
-            - vault-client-init
-      tags:
-        - vault-client-init
-      when:
-        - client_name is defined and client_name != ""
-        - vault_container_name is defined and vault_container_name != ""
-        - vault_admin_token is defined and vault_admin_token != ""
-
   handlers:
+    - name: Common handlers
+      import_tasks: common-handlers.yml
+
     - name: Create admin token file
       copy:
         dest: "{{ src_admin_token_folder | default('tmp', true) }}/admin-token"
         content: |
           {{ create_admin_output.stdout | from_json | json_query('auth.client_token') }}
       no_log: true
-
-    - name: Get kv2 vault secrets output
-      debug:
-        msg: "{{ get_kv2_vault_secret_output.stdout }}"
-
-    - name: Get approle id output
-      debug:
-        msg: "{{ get_approle_id_output.stdout }}"
-
-    - name: Get wrapped secret id output
-      debug:
-        msg: "{{ get_wrapped_secret_id_output.stdout }}"
-
-    - name: Create roleid file
-      copy:
-        dest: "{{ src_roleid_folder | default('tmp', true) }}/roleid"
-        content: |
-          {{ get_approle_id_output.stdout | from_json | json_query('data.role_id') }}
-
-    - name: Create secretid file
-      copy:
-        dest: "{{ src_secretid_folder | default('tmp', true) }}/secretid"
-        content: |
-          {{ get_wrapped_secret_id_output.stdout | from_json | json_query('wrap_info.token') }}

@@ -206,29 +206,31 @@ _**Important notes**_:
 
 - Ansible decryption password is `dev`.
 
-- Setup vault (Add user, enable auth and secret engines etc..)
+- Run the service for vault. Seee `docker-compose.yml`
 
-      pipenv run ansible-playbook playbook.yml \
-        --tags root,setup \
-        --ask-vault-pass \
-        --extra-vars "vault_container_name=<container-name>"
+- Setup vault (Add admin user, enable auth and secret engines etc..)
 
-- Create admin user
+      pipenv run ansible-playbook manage-playbook.yml \
+      --tags setup,create-admin \
+      --ask-vault-pass \
+      --extra-vars "vault_container_name=<container-name>"
 
-      pipenv run ansible-playbook playbook.yml \
-        --tags root,create-admin \
-        --ask-vault-pass \
-        --extra-vars "vault_container_name=<container-name>"
+- Admin token is created by default at `./tmp` folder.
 
-- Initialize a basic setup for the client
+- Setup and initialize the client/agent.
 
-      pipenv run ansible-playbook playbook.yml \
-        --tags vault-client-init \
-        --ask-vault-pass \
-        --extra-vars \
-        "vault_container_name=hashicorp-vault_vault_1 \
-        client_name=<client_name> \
-        vault_admin_token=<admin-token>"
+  - _Note_ - For dev and testing purposes _scraper_ is the client name.
+  - Setups role, policy ...
+  - Runs the vault agent container
+  - Generates the roldeid and secretid and inject it to the container agent
 
+```
+pipenv run ansible-playbook vault_client_scraper_init.yml \
+      --ask-vault-pass \
+      --extra-vars \
+      "vault_container_name=<container-name> \
+      client_name=<scraper | client_name> \
+      service=<vault-agent | service-name>"
+```
 
 See `playbook.yml` for other tasks.

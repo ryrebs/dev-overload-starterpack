@@ -1,4 +1,4 @@
-FROM vault:latest
+FROM hashicorp/vault
 
 RUN apk add jq
 

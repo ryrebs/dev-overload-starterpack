@@ -1,4 +1,0 @@
----
-- name: Initialize vault agent
-  debug:
-    msg: "TODO: implement me!"

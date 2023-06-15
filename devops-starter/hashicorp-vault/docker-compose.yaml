@@ -1,24 +1,47 @@
-version: '3'
+x-agent: &agent
+  volumes:
+    - $VAULT_AGENT_CONFIG_FILEPATH:/vault/config.hcl
+    - $VAULT_AGENT_TMPL_FILEPATH:/vault/vault-agent.json.tmpl
 
 volumes:
   vault-vol:
+  vault-logs:
 
 networks:
   vault-network:
 
 services:
-  vault:
-    image: my-app/vault:latest
+  vault-dev:
+    image: my-vault/vault:latest
+    container_name: vault-dev
     build:
       context: .
       dockerfile: vault.Dockerfile
     environment:
-      - HISTIGNORE="&:vault*"
-    command: ["-dev", "-dev-root-token-id=root"] # Dev setup, remove for prod
+      HISTIGNORE: "&:vault*"
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    command: "-dev -dev-root-token-id=root"
+    cap_add:
+      - IPC_LOCK
     ports:
-      - 127.0.0.0:8200:8200
+      - 127.0.0.1:8200:8200
+    networks:
+      - vault-network
+
+  vault-prod:
+    image: my-vault/vault:latest
+    build:
+      context: .
+      dockerfile: vault.Dockerfile
+    environment:
+      HISTIGNORE: "&:vault*"
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 127.0.0.1:8200:8200
     volumes:
       - vault-vol:/data
+      - vault-logs:/logs/vault_audit.log
       - $VAULT_CONFIG_FILEPATH:/vault/config.hcl
     networks:
       - vault-network
@@ -29,13 +52,7 @@ services:
       context: .
       dockerfile: vault-agent.Dockerfile
     environment:
-      - HISTIGNORE="&:vault*"
-    ports:
-      - 127.0.0.0:8100:8100
-    volumes:
-      - ./vault-agent.tmpl:/vault/vault-agent.tmpl
-      - $VAULT_AGENT_CONFIG_FILEPATH:/vault/config.hcl
-      - ./tmp/roleid:/etc/vault/roleid
-      - ./tmp/secretid:/etc/vault/secretid
+      HISTIGNORE: "&:vault*"
+    <<: *agent
     networks:
       - vault-network

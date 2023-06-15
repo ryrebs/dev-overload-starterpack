@@ -1,0 +1,12 @@
+---
+- name: Get kv2 vault secrets output
+  debug:
+    msg: "{{ get_kv2_vault_secret_output.stdout }}"
+
+- name: Get approle id output
+  debug:
+    msg: "{{ get_approle_id_output.stdout }}"
+
+- name: Get wrapped secret id output
+  debug:
+    msg: "{{ get_wrapped_secret_id_output.stdout }}"
