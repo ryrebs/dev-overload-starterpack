@@ -34,3 +34,11 @@ temp
 **/.pyc
 
 **/__pycache__
+
+.terraform.lock.hcl
+
+terraform-bin
+
+terraform.tfstate**
+
+**.terraform
