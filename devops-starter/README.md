@@ -11,3 +11,5 @@
 - [grafana](grafana-labs) - Grafana basic setup
 
 - [vault](hashicorp-vault) - Vault basic setup
+
+- [terraform](hashicorp-terraform) - Tool for managing infra as a configuration
