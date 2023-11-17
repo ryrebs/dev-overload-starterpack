@@ -1,4 +1,4 @@
-A. Interface - collection of function signatures; describes _behavior_ unlike _struct_ which which describes data
+A. Interface - collection of function signatures; describes _behavior_ unlike _struct_ which describes data
 
 B. Naming convention should be _method name_ + _er_
 
