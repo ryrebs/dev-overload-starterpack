@@ -91,5 +91,5 @@ G. Rune - alias type of int32 , also represents a Unicode code point
 
 ```
  r := 'a' // 97
- var rn rune := 'a' // 97
+ var rn rune = 'a' // 97
 ```
