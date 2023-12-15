@@ -1,6 +1,6 @@
 ---
 - name: Change shell to zsh
-  command: chsh -s /usr/bin/zsh
+  command: chsh -s `which zsh`
   become: yes
   when: zsh is success
 
