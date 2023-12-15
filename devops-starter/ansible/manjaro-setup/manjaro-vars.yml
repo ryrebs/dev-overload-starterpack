@@ -1,8 +1,10 @@
 ---
-user:
-email:
-docker_compose_version: 1.25.5
-golang_version: go1.18.2
-nvm_version: v0.35.3
-golang_root_path: ~/Downloads/Golang
-golang_app_path: ~/Downloads/Golang/packages
+github_user:
+github_email:
+golang_version:
+nvm_version:
+user_home_path:
+android_home_path:
+golang_root_path:
+golang_app_path:
+jailtime_path:

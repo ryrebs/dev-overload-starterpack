@@ -1,5 +1,8 @@
 ---
 - hosts: localhost
+  vars_files:
+    - ./manjaro-vars.yml
+
   tasks:
     - name: Install and setup development packages on manjaro
       import_tasks: manjaro-tasks.yml

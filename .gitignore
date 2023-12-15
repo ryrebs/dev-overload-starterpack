@@ -42,3 +42,5 @@ terraform-bin
 terraform.tfstate**
 
 **.terraform
+
+**Pipfile.lock

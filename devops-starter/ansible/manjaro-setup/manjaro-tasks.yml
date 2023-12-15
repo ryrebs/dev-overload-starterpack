@@ -1,10 +1,4 @@
 ---
-- name: Include variables
-  include_vars:
-    file: manjaro-vars.yml
-    name: xvar
-  tags: var
-
 - name: Check if pamac is installed
   command: which pamac
   register: pamac
@@ -24,6 +18,43 @@
     - pamac.rc == 0
     - updates.rc > 0
   tags: base
+
+- name: Install apparmor
+  command: pamac install apparmor --no-confirm
+  become: yes
+  register: apparmor
+  notify: Enable apparmor service
+  tags:
+    - base
+
+- name: Install clamav
+  command: pamac install clamav --no-confirm
+  become: yes
+  register: clamav
+  notify: 
+    - Enable clamav daemon
+    - Enable clamav freshclam
+  tags:
+    - base
+
+- name: Install docker compose
+  command: pamac install docker-compose --no-confirm
+  become: yes
+  tags:
+    - base
+
+- name: Install firejail
+  command: pamac install firejail --no-confirm
+  become: yes
+  register: apparmor
+  tags:
+    - base
+
+- name: Install redshift
+  command: pamac install redshift --no-confirm
+  become: yes
+  tags:
+    - base
 
 - name: Install yay
   command: pamac install yay --no-confirm
@@ -95,19 +126,9 @@
     - dev
     - docker
 
-- name: Download docker-compose
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ xvar.docker_compose_version }}/docker-compose-Linux-x86_64"
-    dest: /usr/local/bin/docker-compose
-    mode: +x
-  become: yes
-  tags:
-    - dev
-    - docker
-
 - name: Install nvm
   shell: >
-    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ xvar.nvm_version }}/install.sh" | bash
+    curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh" | bash
   args:
     creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
   notify:
@@ -136,7 +157,7 @@
 
 - name: Install Golang
   get_url:
-    url: "https://dl.google.com/go/{{ xvar.golang_version }}.linux-amd64.tar.gz"
+    url: "https://dl.google.com/go/{{ golang_version }}.linux-amd64.tar.gz"
     dest: "{{ ansible_env.HOME }}/Downloads/golang.tar.gz"
   notify: Golang post installation setup
   tags:
@@ -150,7 +171,7 @@
     backup: yes
     block: |
       # Android
-      ANDROID_HOME=<replaceme>
+      ANDROID_HOME={{ android_home_path }}
       export ANDROID_NDK_HOME=$ANDROID_HOME/ndk
       export PATH=$PATH:$ANDROID_HOME/emulator
       export PATH=$PATH:$ANDROID_HOME/tools
@@ -163,14 +184,13 @@
       # Show large size on current dir
       alias getsize="du -h ./ | grep -P '\dG'"
 
-      # Redshift
-      alias rshift-night='redshift -P -O 3700'
-      alias rshift-mid='redshift -P -O 4200'
-      alias rshift-day='redshift -P -O 5500'
-
-      # clamav
-      alias scanfolder="clamscan --recursive --infected <replaceme>"
+      # Clamav
+      alias scanfolder="clamscan --recursive --infected {{ user_home_path }}"
       alias scanf="clamscan"
+
+      # Firejail
+      alias fjail='firejail --apparmor --private={{ jailtime_path }}'
+
   tags:
     - dev
     - misc
