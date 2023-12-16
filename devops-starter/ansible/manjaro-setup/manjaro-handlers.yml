@@ -129,12 +129,15 @@
   copy:
     dest: "{{ tlp_config_path }}"
     content: |
+      ## -- Start custom config
+      ## Mostly firmware related. Check docs for more info
+
       ## On battery related settings
-      # Battery charge level below which charging will begin.
+      # Start charging at threshold or lesser
       START_CHARGE_THRESH_BAT0=25
 
-      # Battery charge level above which charging will stop.
-      STOP_CHARGE_THRESH_BAT0=80
+      # Stop charging at threshold level or greater
+      STOP_CHARGE_THRESH_BAT0=81
 
       # Enable platform profile
       PLATFORM_PROFILE_ON_BAT=balance_power
@@ -144,14 +147,16 @@
 
       ## On ac related settings
       # Set CPU energy/performance policies
-      CPU_ENERGY_PERF_POLICY_ON_AC=performance
+      CPU_ENERGY_PERF_POLICY_ON_AC=balance_performance
 
       # Enable platform profile
-      PLATFORM_PROFILE_ON_AC=performance
+      PLATFORM_PROFILE_ON_AC=balance_performance
 
       # Controls runtime power management for PCIe devices
       RUNTIME_PM_ON_AC=auto
 
       # Enable turbo boost
       CPU_BOOST_ON_AC=1
+      
+      ## -- Start custom config
   when: tlp is success
