@@ -8,3 +8,4 @@ android_home_path:
 golang_root_path:
 golang_app_path:
 jailtime_path:
+tlp_config_path:

@@ -37,6 +37,15 @@
   tags:
     - base
 
+- name: Install tlp for battery management
+  command: pamac install tlp --no-confirm
+  register: tlp
+  become: yes
+  notify: 
+    - Setup tlp config
+  tags:
+    - base
+
 - name: Install docker compose
   command: pamac install docker-compose --no-confirm
   become: yes
