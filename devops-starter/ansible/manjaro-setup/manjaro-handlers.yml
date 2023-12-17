@@ -133,8 +133,8 @@
       ## Mostly firmware related. Check docs for more info
 
       ## On battery related settings
-      # Start charging at threshold or lesser
-      START_CHARGE_THRESH_BAT0=25
+      # Start charging at level below this threshold
+      START_CHARGE_THRESH_BAT0=26
 
       # Stop charging at threshold level or greater
       STOP_CHARGE_THRESH_BAT0=81
