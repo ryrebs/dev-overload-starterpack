@@ -31,9 +31,6 @@
   command: pamac install clamav --no-confirm
   become: yes
   register: clamav
-  notify: 
-    - Enable clamav daemon
-    - Enable clamav freshclam
   tags:
     - base
 
@@ -157,12 +154,6 @@
   tags:
     - dev
     - node
-
-- name: Remove golang folder
-  file:
-    path: "{{ ansible_env.HOME }}/Downloads/go"
-    state: absent
-  tags: golang
 
 - name: Install Golang
   get_url:
