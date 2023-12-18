@@ -194,3 +194,14 @@
   tags:
     - dev
     - misc
+
+- name: Load/unload kernel modules
+  become: yes
+  copy:
+    dest: "{{ kernel_module_path }}"
+    content: |
+      blacklist pcspkr
+      blacklist snd_pcsp
+  tags:
+    - base
+    - module
