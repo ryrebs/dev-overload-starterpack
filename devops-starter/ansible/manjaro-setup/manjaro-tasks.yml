@@ -185,7 +185,7 @@
       alias getsize="du -h ./ | grep -P '\dG'"
 
       # Clamav
-      alias scanfolder="clamscan --recursive --infected {{ user_home_path }}"
+      alias scanhome="clamscan --recursive --infected {{ ansible_env.HOME }}"
       alias scanf="clamscan"
 
       # Firejail
@@ -194,6 +194,8 @@
   tags:
     - dev
     - misc
+    - zshrc
+
 
 - name: Load/unload kernel modules
   become: yes
