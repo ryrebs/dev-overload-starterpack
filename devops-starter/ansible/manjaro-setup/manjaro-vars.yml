@@ -1,4 +1,5 @@
 ---
+shell_user:
 github_user:
 github_email:
 golang_version:
