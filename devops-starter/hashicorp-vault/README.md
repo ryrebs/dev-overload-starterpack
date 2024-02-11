@@ -194,7 +194,7 @@ _**Important notes**_:
 
 - Setup vault agent. _See vault-agent.Dockerfile and vault-agent-config.hcl_.
 
-- Use a trusted agent (Ansible) that supplies the secret\*id (Can be response wrapped) and/or role_id. See **\*Important notes**\_.
+- Use a trusted agent (Ansible) that supplies the secret id (Can be response wrapped) and/or role_id. See **Important notes**.
 
 - Create a sample python application as client that uses the vault agent to get secrets from vault.
 
