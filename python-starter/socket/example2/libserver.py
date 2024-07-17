@@ -80,6 +80,7 @@ class Message:
         hdrlen = 2
 
         print(self._recv_buffer[:hdrlen])
+        # Checks to make sure enough data is received before getting the header length
         if len(self._recv_buffer) >= hdrlen:
             # Get the header length
             print(f"Struct unpack: {struct.unpack('>H', self._recv_buffer[:hdrlen])}")
@@ -102,6 +103,7 @@ class Message:
         """
         header_len = self._jsonheader_len
 
+        # Checks to make sure enough data is received before getting the header data
         if len(self._recv_buffer) >= header_len:
             # Get the header
             self.jsonheader = self._json_decode(self._recv_buffer[:header_len], "utf-8")
@@ -124,6 +126,8 @@ class Message:
         Get body from the received data to self.request
         """
         content_len = self.jsonheader["content-length"]
+
+        # Checks to make sure enough data is received before getting the content data
         if not len(self._recv_buffer) >= content_len:
             return
 
