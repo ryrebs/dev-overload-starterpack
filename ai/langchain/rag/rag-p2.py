@@ -32,7 +32,7 @@ llm = init_chat_model("qwen2.5:7b", model_provider="ollama")
 
 
 # Specify an ID for the thread
-config = {"configurable": {"thread_id": "abc123"}}
+config = {"configurable": {"thread_id": "abc123"}} # "This ID is used to distinguish conversational threads (e.g., between different users)."
 
 
 ## Load the source or the data as documents
