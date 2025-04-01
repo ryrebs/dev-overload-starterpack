@@ -11,6 +11,7 @@ langchain-core = "*"
 langchain-ollama = "*"
 beautifulsoup4 = "*"
 langchain-chroma = "*"
+langgraph-checkpoint-sqlite = "*"
 
 [dev-packages]
 

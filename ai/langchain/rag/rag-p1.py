@@ -92,8 +92,6 @@ def store_doc(all_splits, with_metadata=False):
     # Add the splitted docs
     vector_store.add_documents(documents=all_splits)
 
-    return vector_store
-
 
 ## Setup chat moddel
 def get_chat_model():
@@ -117,7 +115,7 @@ def create_message(question, context):
 def init_source():
     docs = load_source()
     docs_splitted = split_source(docs)
-    return store_doc(docs_splitted, True)
+    store_doc(docs_splitted, True)
 
 
 ## Query analysis for adding filters
@@ -130,7 +128,7 @@ def analyze_query(state: State):
 
 
 def retrieve(state: State):
-    vector_store = init_source()
+    init_source()
     query = state["query"]
     retrieved_docs = vector_store.similarity_search(
         query["query"],
