@@ -9,6 +9,7 @@ langchainhub = "*"
 langgraph = "*"
 psycopg2 = "*"
 langchain-ollama = "*"
+langchain-chroma = "*"
 
 [dev-packages]
 
