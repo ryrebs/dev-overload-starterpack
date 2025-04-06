@@ -1,9 +1,12 @@
 from bs4 import SoupStrainer
+from typing import List
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.tools import tool
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 from langgraph.prebuilt import create_react_agent
+from langchain_core.documents import Document
+from langchain_core.runnables import chain
 
 
 target_url = "https://blog.langchain.dev/using-langsmith-to-support-fine-tuning-of-open-source-llms/"
@@ -25,6 +28,26 @@ def search_info(query: str):
 
     content = docs[0].page_content
     return content
+
+
+@chain
+def retriever(query: str) -> List[Document]:
+    """Retriever is a function that accepts a query and returns a list of relevant
+    documents based on the query
+    """
+
+    return vector_store.similarity_search(query, k=1)
+
+
+## Retriever usage
+docs = retriever.batch(
+    [
+        "How many distribution centers does Nike have in the US?",
+        "When was Nike incorporated?",
+    ],
+)
+## Vector store can also generate its own retriever
+## see docs for more info.
 
 
 if __name__ == "__main__":
