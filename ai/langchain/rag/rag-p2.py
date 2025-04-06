@@ -212,7 +212,7 @@ if __name__ == "__main__":
     graph_builder.set_entry_point("query_or_respond")
     graph_builder.add_conditional_edges(
         "query_or_respond",
-        tools_condition,
+        tools_condition,  # Go to tool if tool calls exists.
         {END: END, "tools": "tools"},
     )
     graph_builder.add_edge("tools", "generate")
