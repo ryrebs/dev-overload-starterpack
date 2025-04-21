@@ -2,3 +2,4 @@ chroma_langchain_db
 .venv
 **.sqlite**
 *.lock
+*.db
