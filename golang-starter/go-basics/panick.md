@@ -32,6 +32,8 @@ func main() {
 
 func panicker() {
 	fmt.Println("panic start")
+
+	// Catch the panic here
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println("Recovering Error: ", err) // gets the panic error
@@ -44,10 +46,11 @@ func panicker() {
 			// Panic details ...
 		}
 	}()
+	// Throw the panic here
 	panic("something bad happened")
 }
 
-// without repanic
+//// without repanic
 // start
 // panic start
 // Recovering Error: ...

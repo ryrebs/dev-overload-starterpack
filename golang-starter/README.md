@@ -52,7 +52,7 @@ B. Fundamentals:
 
 2.  Setup paths:
 
-    GOROOT - path to go folder
+    GOROOT - path to go folder # Outdated setup, no need to set up
 
     GOPATH - path where your go packages will be downloaded
 
@@ -67,30 +67,29 @@ B. Fundamentals:
 Folder structures:
 
 B1. Using your own package with go modules
-    workspace/
-        your/
-            path/
-                packagename/
-                    example.go
-    bin/
-    main.go
-    go.mod
+workspace/
+your/
+path/
+packagename/
+example.go
+bin/
+main.go
+go.mod
 
-1. Issue command `go build` on _working dir_ to build your app
+1.  Issue command `go build` on _working dir_ to build your app
 
-2. Initialize `go.mod` file with: `go mod init module/path/here`
+2.  Initialize `go.mod` file with: `go mod init module/path/here`
 
 3.  Set built _binary_ path directory to your `bin/` folder:
-
-        go env -w GOBIN=`pwd`/bin
+    go env -w GOBIN=`pwd`/bin
 
         or
 
         export GOBIN=path/to/bin
 
-4. `go install` to create binary file in `bin/` folder
+4.  `go install` to create binary file in `bin/` folder
 
-5. Importing
+5.  Importing
 
 _go.mod sample file_
 
@@ -149,7 +148,7 @@ require github.com/some/module some.version
     go clean -modcache
 
 #### F. Remove unused package/s:
-    
+
     go mod tidy
 
 #### G. Building single binary
