@@ -44,3 +44,5 @@ terraform.tfstate**
 **.terraform
 
 **Pipfile.lock
+
+playground/
