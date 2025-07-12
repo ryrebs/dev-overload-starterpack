@@ -1,4 +1,4 @@
-```
+```go
 number := 50
 guess := 30
 

@@ -1,6 +1,6 @@
 A. Goroutines - independently executing functions. Lightweight threads compared to OS threads
 
-```
+```go
 import (
 	"fmt"
 	"time"
@@ -21,7 +21,7 @@ func main() {
 
 B. Using wait group instead of sleep
 
-```
+```go
 import (
 	"fmt"
 	"sync"
@@ -49,7 +49,7 @@ func main() {
 
 C. Multiple goroutines that executes without synchronization or without order
 
-```
+```go
 var wg = sync.WaitGroup{}
 var counter = 0
 
@@ -80,7 +80,7 @@ D. Using _mutex_ to lock and unlock a part of code.
 - _GOMAXPROCS variable limits the number of operating system threads that can execute user-level Go code simultaneously_
   .([source](https://golang.org/pkg/runtime/#GOMAXPROCS))
 
-```
+```go
 var wg = sync.WaitGroup{}
 var m = sync.RWMutex{}
 

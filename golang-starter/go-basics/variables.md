@@ -1,6 +1,6 @@
 A. Variables declared at package level should always have type
 
-```
+```go
 var pkgVar float32 = 1.2
 
 //  Grouping variable declarations for organization
@@ -8,6 +8,11 @@ var (
 	name string = "samsie"
 	age  int    = 5
 )
+
+// Exported variable starts with a capital letter.
+// Meaning other package can access this variable
+
+var ExportedVar = 1
 ```
 
 B. Naming:
@@ -26,7 +31,7 @@ B. Naming:
 
 C. Sample Codes
 
-```
+```go
 import (
 	"fmt"
 	"strconv"

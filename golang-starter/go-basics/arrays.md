@@ -1,6 +1,6 @@
 A. Array with specifc size
 
-```
+```go
 // [size]type
 grades := [3]int{1, 2, 3}
 fmt.Println(grades) // [1 2 3]
@@ -8,7 +8,7 @@ fmt.Println(grades) // [1 2 3]
 
 B. Without specifying the size
 
-```
+```go
 // [...]type
 grades2 := [...]int{1, 2, 3, 4}
 fmt.Println(grades2) // [1 2 3 4]
@@ -16,7 +16,7 @@ fmt.Println(grades2) // [1 2 3 4]
 
 C. Empty array and assigning value later
 
-```
+```go
 var students [3]string
 fmt.Println(students) // []
 students[0] = "student1"
@@ -26,7 +26,7 @@ fmt.Println(len(students)) // 3
 
 D. Arrays are copied by value
 
-```
+```go
 a := [...]int{1, 2, 3}
 b := a
 b[1] = 200
@@ -36,7 +36,7 @@ fmt.Println(b) // [1 200 3]
 
 E. Using pointers to access a reference to array's memory address
 
-```
+```go
 a := [...]int{1, 2, 3}
 b := &a
 b[1] = 200

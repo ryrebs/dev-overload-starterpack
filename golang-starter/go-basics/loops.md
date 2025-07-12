@@ -1,6 +1,6 @@
 A. Simple for loop, prints 0 to 4
 
-```
+```go
 for i := 0; i < 5; i++ {
     fmt.Println(i)
 }
@@ -8,7 +8,7 @@ for i := 0; i < 5; i++ {
 
 B. Initializing Multiple values
 
-```
+```go
 for i, j := 0, 0; i < 5; i, j = i+1, j+1 {
     fmt.Println(i, j)
 }
@@ -16,7 +16,7 @@ for i, j := 0, 0; i < 5; i, j = i+1, j+1 {
 
 C. Initializer outside for a block
 
-```
+```go
 count := 0
 for ; count < 5; count++ {
     fmt.Println(count)
@@ -25,7 +25,7 @@ for ; count < 5; count++ {
 
 D. Do while for loop
 
-```
+```go
 num := 0
 for num < 10 {
     fmt.Println(num)
@@ -35,7 +35,7 @@ for num < 10 {
 
 E. Breaking an infinite loop
 
-```
+```go
 i := 0
 for {
     fmt.Println("Execute me!")
@@ -48,7 +48,7 @@ for {
 
 F. Using Continue statements
 
-```
+```go
 for i := 0; i < 10; i++ {
     if i%2 == 0 {
         continue
@@ -59,7 +59,7 @@ for i := 0; i < 10; i++ {
 
 G. Breaking nested loop using Label
 
-```
+```go
 LoopLabel:
 	for i := 1; i <= 3; i++ {
 		for j := 1; j <= 3; j++ {
@@ -77,7 +77,7 @@ H. Looping collections
 
 1. Array
 
-```
+```go
 s := [3]int{1, 2, 3}
 
 for k, v := range s {
@@ -87,7 +87,7 @@ for k, v := range s {
 
 2. Map
 
-```
+```go
 m := map[string]int{
     "a": 1,
     "b": 2,

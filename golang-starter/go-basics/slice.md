@@ -1,6 +1,6 @@
 A. Slice - Describes a part of an _array_. Copied by reference
 
-```
+```go
 a := []int{1, 2, 3, 5, 6}
 b := a
 b[1] = 5
@@ -13,7 +13,7 @@ fmt.Println(c)      // [3 5 6]
 
 B. Append - append(parentSlice, elements)
 
-```
+```go
 a := []int{}
 fmt.Println(a) // []
 fmt.Println(len(a)) // 0
@@ -26,7 +26,7 @@ fmt.Println(cap(a)) // 2
 
 C. make(T, args) - initializes slice, map and channels, returns initialized value of type T (not \*T)
 
-```
+```go
 // make(type, size, capacity)
 a := make([]int, 3, 100) // initialized with default values of type T
 fmt.Println(a)             // [0 0 0]

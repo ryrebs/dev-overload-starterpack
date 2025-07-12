@@ -1,6 +1,6 @@
 A. Passing multiple arguments with the same type
 
-```
+```go
 greet("Hi", "Ed") // Hi Ed
 
 func greet(msg, name string) { // parameter, parameter type
@@ -10,7 +10,7 @@ func greet(msg, name string) { // parameter, parameter type
 
 B. Passing pointer type argument
 
-```
+```go
 name := "Edy"
 msg := "Hello"
 greet2(&msg, &name) // Hello Edy
@@ -22,7 +22,7 @@ func greet2(msg, name *string) { // parameter, parameter type
 
 C. Variatic parameter
 
-```
+```go
 greet3("Hello", "Ed", "Edy") // Hello [Ed Edy]
 
 func greet3(msg string, names ...string) {
@@ -33,7 +33,7 @@ func greet3(msg string, names ...string) {
 
 D. Return value
 
-```
+```go
 fmt.Println(greet4("Hellooo")) // Echoed Hellooo
 
 
@@ -46,7 +46,7 @@ E. Return a pointer - pointer return value is created on Heap rather than the st
 since variables in the function is created on that function's stack
 and deleted after the function executes or returns
 
-```
+```go
 func sum(values ...int) *int {
 	result := 0
 	// some logic here
@@ -56,7 +56,7 @@ func sum(values ...int) *int {
 
 E. Named return value
 
-```
+```go
 fmt.Println(greet5("Heyy")) // Heyy echoed
 
 func greet5(msg string) (echo string) {
@@ -67,7 +67,7 @@ func greet5(msg string) (echo string) {
 
 F. Returning multiple value from function call
 
-```
+```go
 func main() {
 	d, err := divide(5.0, 0.0)
 	// some error checking here
@@ -85,7 +85,7 @@ func divide(a, b float64) (float64, error) {
 
 G. Anonymous function and immediately invoke function
 
-```
+```go
 func main() {
 	func() {
 		// some logic here
@@ -95,7 +95,7 @@ func main() {
 
 H. Function as variable
 
-```
+```go
 f := func() {
 	fmt.Println("Function variable")
 }
@@ -104,7 +104,7 @@ f()
 
 I. Method
 
-```
+```go
 func main() {
 	g := greeter{
 		greeting: "Hello",

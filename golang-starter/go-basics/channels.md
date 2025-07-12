@@ -1,7 +1,7 @@
 A. Channels is the way for the goroutine to communicate with each other by sending and receiving data of specified element type.
 ([Source](https://golang.org/ref/spec#Channel_types))
 
-```
+```go
 var wg = sync.WaitGroup{}
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 
 B. Organizing goroutines to do specific job only, which is either receive or send
 
-```
+```go
 // receiving only
 go func(ch <-chan int) {
     i := <-ch
@@ -51,14 +51,14 @@ go func(ch chan<- int) {
 
 C. Buffered channels creates storage to accept multiple incoming data
 
-```
+```go
 // creates 50 int storage
 ch := make(chan int, 50)
 ```
 
 D. Looping through channel
 
-```
+```go
 go func(ch <-chan int) {
     for i := range ch {
         fmt.Println(i)
@@ -78,7 +78,7 @@ go func(ch chan<- int) {
 
 E. Waiting on multiple communication operations through `select`
 
-```
+```go
 
 func main() {
 	ch := make(chan int)

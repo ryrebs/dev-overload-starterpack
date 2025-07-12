@@ -2,7 +2,7 @@ A. Interface - collection of function signatures; describes _behavior_ unlike _s
 
 B. Naming convention should be _method name_ + _er_
 
-```
+```go
 func main() {
 	// create variable of type Writer
 	var w Writer = ConsoleWriter{}
@@ -19,7 +19,7 @@ type Writer interface {
 
 B.1. Implicitly implements the Writer interface by creating the method signature _Write_
 
-```
+```go
 type ConsoleWriter struct{}
 
 func (vw ConsoleWriter) Write(data []byte) (int, error) {
@@ -30,7 +30,7 @@ func (vw ConsoleWriter) Write(data []byte) (int, error) {
 
 C. Using custom type other than struct
 
-```
+```go
 func main() {
 	myInt := myInt(10)
 	var doubled incrementer = &myInt
@@ -54,7 +54,7 @@ func (ic *myInt) Double() int {
 
 D. Creating interface with more than one methods
 
-```
+```go
 func main() {
 
 	var wc writerCloser = newBufferedWriterCloser() // Call the constsructor
@@ -150,7 +150,7 @@ ting buf
 
 E. Using an empty interface
 
-```
+```go
 var myObj interface{} = newBufferedWriterCloser()
 // type cast the empty interface
 if wc, ok := myObj.(writerCloser); ok {
@@ -161,7 +161,7 @@ if wc, ok := myObj.(writerCloser); ok {
 
 F. Using empty interface on switch to check for data type
 
-```
+```go
 var i interface{} = 1
 switch i.(type) {
 case int:
@@ -173,48 +173,4 @@ case float64:
 default:
     fmt.Println("Invalid type")
 } // int
-```
-
-G. Pointer receiver vs value receiver.
-
-If using a value receiver then you can initialize using a value or using the address
-
-```
-var wc writerCloser = writerCloser()
-var wc2 writerCloser = &writerCloser()
-
-
-type writer interface {
-	Write([]byte)(int, error)
-}
-
-
-type closer interface {
-	Closer() error
-}
-
-type writerCloser struct{
-	writer
-	closer
-	}
-
-type myWriterCloser struct{}
-
-func (wc writerCloser) Write(data []byte) (int, error) {
-	return 0, nil
-}
-
-func (wc writerCloser) Close() error {
-	return nil
-}
-```
-
-If receiver uses any pointer then initialize using the address
-
-```
-var wc2 writerCloser = &writerCloser()
-
-func (wc *writerCloser) Write(data []byte) (int, error) {
-	return 0, nil
-}
 ```

@@ -1,6 +1,6 @@
 A. Simple use, case should not overlap
 
-```
+```go
 switch choice := 1; choice {
 case 1:
     fmt.Println("1")
@@ -13,7 +13,7 @@ default:
 
 B. Tagless, case can overlap, runs the first matching case
 
-```
+```go
 choice := 1
 switch {
 case choice == 1:
@@ -27,7 +27,7 @@ default:
 
 C. Fallthrough - executes next case
 
-```
+```go
 choice2 := 1
 switch {
 case choice2 == 1:

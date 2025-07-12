@@ -1,6 +1,6 @@
 A. Panick - when application can not continue to function / execute - unrecoverable events
 
-```
+```go
 // import fmt and panic
 fmt.Println("start")
 panic("Something bad happened")
@@ -13,7 +13,7 @@ fmt.Println("end") // unreachable
 
 B. Use `recover` to recover from `panic`. Use only inside `defer` functions
 
-```
+```go
 package main
 
 import (
@@ -47,6 +47,7 @@ func panicker() {
 		}
 	}()
 	// Throw the panic here
+	// This will be catched by recover
 	panic("something bad happened")
 }
 
