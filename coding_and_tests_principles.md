@@ -2,17 +2,17 @@
 
 ## 🖥 Code-Writing Principles (CLEARFORM)
 
-| Letter | Principle             | Example                                                                                       |
-| ------ | --------------------- | --------------------------------------------------------------------------------------------- |
-| **C**  | Control complexity    | Keep functions short (<20 lines) and nesting ≤3; split long logic into smaller helpers        |
-| **L**  | Limit dependencies    | Use built-ins before adding new packages; assess security and maintenance before adding       |
-| **E**  | Eliminate duplication | Move repeated validation logic into a shared utility and test it once                         |
-| **A**  | Avoid unused features | Don’t add config flags or endpoints until a real requirement exists                           |
-| **R**  | Readable structure    | Use descriptive names like `processPayment()`; order code top-down from high-level to details |
-| **F**  | Fail fast             | Validate all inputs and assumptions early; stop execution immediately on invalid state        |
-| **O**  | One job per module    | Keep payment processing separate from email sending                                           |
-| **R**  | Reduce hidden state   | Avoid shared mutable globals; pass state explicitly as parameters                             |
-| **M**  | Minimize side effects | Pure functions where possible; avoid unexpected DB writes in data transformation functions    |
+| Letter | Principle             | Example                                                                                         |
+| ------ | --------------------- | ----------------------------------------------------------------------------------------------- |
+| **C**  | Control complexity    | Keep functions short (<20 lines) and nesting ≤3; split long logic into smaller helpers          |
+| **L**  | Limit dependencies    | Use built-ins before adding new packages; assess security and maintenance before adding         |
+| **E**  | Eliminate duplication | Move repeated validation logic into a shared utility and test it once                           |
+| **A**  | Avoid unused features | Don’t add config flags or endpoints until a real requirement exists                             |
+| **R**  | Readable structure    | Use descriptive names like `processPayment()`; order code top-down from high-level to details   |
+| **F**  | Fail fast, fail safe  | Validate all inputs and assumptions early fail immediately on invalid state and fail gracefully |
+| **O**  | One job per module    | Keep payment processing separate from email sending                                             |
+| **R**  | Reduce hidden state   | Avoid shared mutable globals; pass state explicitly as parameters                               |
+| **M**  | Minimize side effects | Pure functions where possible; avoid unexpected DB writes in data transformation functions      |
 
 ---
 
