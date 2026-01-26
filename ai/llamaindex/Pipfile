@@ -10,6 +10,9 @@ llama-index-readers-file = "*"
 llama-index-llms-ollama = "*"
 llama-index-embeddings-ollama = "*"
 llama-index-vector-stores-chroma = "*"
+llama-index-experimental = "*"
+ipython = "*"
+polars = "*"
 
 [dev-packages]
 
