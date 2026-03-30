@@ -83,7 +83,6 @@ async def main():
         ctx=ctx,
     )
     print(response)
-    print(response)
 
 
 # Run the agent

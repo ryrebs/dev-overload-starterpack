@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-llama-index = "*"
 llama-index-core = "*"
 llama-index-readers-file = "*"
 llama-index-llms-ollama = "*"
@@ -13,6 +12,10 @@ llama-index-vector-stores-chroma = "*"
 llama-index-experimental = "*"
 ipython = "*"
 polars = "*"
+llama-index-llms-openai = "*"
+llama-index-utils-workflow = "*"
+griffe = "*"
+llama-index = {extras = ["all"], version = "*"}
 
 [dev-packages]
 
