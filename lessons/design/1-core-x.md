@@ -447,7 +447,7 @@ Because architecture without load estimates is guesswork.
 × 5 req/user/day
 = 100M req/day
 
-100M / 86400 ≈ 1157 req/s average
+100M / 86400 (sec) ≈ 1157 req/s average
 Peak ≈ 5x average
 Peak ≈ 6K req/s
 ```
@@ -455,7 +455,7 @@ Peak ≈ 6K req/s
 ### Step 2 — Split reads and writes
 
 ```
-Total peak = 6K QPS
+Total peak = 6K QPS (Queries per second)
 
 Assume:
 Reads 90% = 5.4K QPS
@@ -466,7 +466,7 @@ Writes 10% = 600 QPS
 
 ```
 100M writes/day
-× 100 bytes
+× 100 bytes (Assume 100 bytes as size per record)
 = 10 GB/day raw
 
 With indexes + metadata ~ 3x
@@ -483,8 +483,8 @@ With replication factor 3:
 
 ```
 6K req/s
-× 2 KB/response
-= 12 MB/s
+× 2 KB/response (Rough estimate of average response size)
+= 12 MB/s / 8 bits
 ≈ 96 Mbps
 ```
 
@@ -1120,7 +1120,7 @@ Clients → local region replica
 
 ### CP systems often use
 
-- quorum writes
+- quorum writes (A write is considered successful once a majority of replicas confirm it.)
 - leader election
 - consensus
 

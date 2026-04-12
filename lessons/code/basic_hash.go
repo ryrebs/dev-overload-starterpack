@@ -20,7 +20,7 @@ type Entry struct {
 
 func main() {
 	// We want fast storage and lookup
-	// O(1) compate with array O(n)
+	// O(1) compare with array O(n)
 	
 	// calc hash
 	sample1 := "tester"
