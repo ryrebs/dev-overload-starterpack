@@ -484,7 +484,7 @@ With replication factor 3:
 ```
 6K req/s
 × 2 KB/response (Rough estimate of average response size)
-= 12 MB/s / 8 bits
+= 12 MB/s * 8 bits
 ≈ 96 Mbps
 ```
 
