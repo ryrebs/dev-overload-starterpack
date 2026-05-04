@@ -21,9 +21,9 @@ fmt.Printf("%v %p, %p", a, b, c) // value, pointer, pointer
 // [1 2 3] 0xc00001e400, 0xc00001e408
 ```
 
-C. new(T) - use to allocate _zeroed storage/memory_ of type T and returns its address. **Does not** _initialize it_.
+C. new(T) - use to allocate _zeroed storage/memory_ of type T and returns its address.
 
-It means all the fields are initialized to Go's zero values for their types:
+It means all the fields are initialized to Go's ZERO values for their types:
 
 Type | Zero Value
 int | 0
